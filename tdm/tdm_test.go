@@ -42,6 +42,56 @@ func TestGetInterleavedRanking(t *testing.T) {
 					intergo.Res{RankingIDx: 0, ItemIDx: 0},
 					intergo.Res{RankingIDx: 1, ItemIDx: 0},
 				},
+				{
+					intergo.Res{RankingIDx: 1, ItemIDx: 0},
+					intergo.Res{RankingIDx: 0, ItemIDx: 0},
+				},
+			},
+		},
+		{
+			inputRks: []intergo.Ranking{
+				tRanking{1, 2, 3, 4, 5},
+				tRanking{1, 20, 30, 40, 50},
+			},
+			num: 2,
+			expectedPatterns: [][]intergo.Res{
+				{
+					intergo.Res{RankingIDx: 0, ItemIDx: 0},
+					intergo.Res{RankingIDx: 1, ItemIDx: 1},
+				},
+				{
+					intergo.Res{RankingIDx: 1, ItemIDx: 0},
+					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+				},
+			},
+		},
+		{
+			inputRks: []intergo.Ranking{
+				tRanking{1, 2, 3, 4, 5},
+				tRanking{1, 20, 30, 40, 50},
+			},
+			num: 3,
+			expectedPatterns: [][]intergo.Res{
+				{
+					intergo.Res{RankingIDx: 0, ItemIDx: 0},
+					intergo.Res{RankingIDx: 1, ItemIDx: 1},
+					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+				},
+				{
+					intergo.Res{RankingIDx: 1, ItemIDx: 0},
+					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Res{RankingIDx: 1, ItemIDx: 1},
+				},
+				{
+					intergo.Res{RankingIDx: 1, ItemIDx: 0},
+					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Res{RankingIDx: 0, ItemIDx: 2},
+				},
+				{
+					intergo.Res{RankingIDx: 0, ItemIDx: 0},
+					intergo.Res{RankingIDx: 1, ItemIDx: 1},
+					intergo.Res{RankingIDx: 1, ItemIDx: 2},
+				},
 			},
 		},
 	}
@@ -50,6 +100,7 @@ func TestGetInterleavedRanking(t *testing.T) {
 		tcc := tc
 		t.Run(fmt.Sprintf("%d-th unit test", n), func(t *testing.T) {
 			actual := TDM.GetInterleavedRanking(tcc.num, tcc.inputRks...)
+			t.Log("actual: ", actual)
 			assert.Equal(t, true, len(actual) <= tcc.num)
 
 			var isExpected = false
@@ -71,3 +122,38 @@ func TestGetInterleavedRanking(t *testing.T) {
 		})
 	}
 }
+
+/*
+
+func TestGetRandomKey(t *testing.T) {
+	tc := struct {
+		numCandidate int
+		numSelection int
+		threshold    float64
+	}{
+		numCandidate: 100,
+		numSelection: 10000000,
+		threshold:    10e-6,
+	}
+	input := map[int]interface{}{}
+	for i := 0; i < tc.numCandidate; i++ {
+		input[i] = true
+	}
+
+	chosenRatio := map[int]float64{}
+
+	for i := 0; i < tc.numSelection; i++ {
+		chosenRatio[tdm.ExportedGetRandomKey(input)] += 1
+	}
+
+	fmt.Println(chosenRatio)
+
+	for _, v := range chosenRatio {
+		diff := v/float64(tc.numSelection) - 1/float64(tc.numCandidate)
+		if diff < 0 {
+			diff = -diff
+		}
+		assert.Equal(t, true, diff < tc.threshold)
+	}
+}
+*/
