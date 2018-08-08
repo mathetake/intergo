@@ -23,25 +23,6 @@ func (rk tRanking) Len() int {
 
 var _ intergo.Ranking = tRanking{}
 
-func TestWeisoiya(t *testing.T) {
-	TDM := &tdm.TeamDraftMultileaving{}
-	RankingA := tRanking{1, 2, 3, 4, 5}
-	RankingB := tRanking{10, 20, 30, 40, 50}
-
-	idxToRk := map[int]tRanking{
-		0: RankingA,
-		1: RankingB,
-	}
-
-	res := TDM.GetInterleavedRanking(4, RankingA, RankingB)
-	iRanking := tRanking{}
-	for _, it := range res {
-		iRanking = append(iRanking, idxToRk[it.RankingIDx][it.ItemIDx])
-	}
-
-	fmt.Println("Result: ", iRanking)
-}
-
 func TestGetInterleavedRanking(t *testing.T) {
 	TDM := &tdm.TeamDraftMultileaving{}
 
@@ -52,12 +33,8 @@ func TestGetInterleavedRanking(t *testing.T) {
 	}{
 		{
 			inputRks: []intergo.Ranking{
-				tRanking{
-					items: []int{1, 2, 3, 4, 5},
-				},
-				tRanking{
-					items: []int{10, 20, 30, 40, 50},
-				},
+				tRanking{1, 2, 3, 4, 5},
+				tRanking{10, 20, 30, 40, 50},
 			},
 			num: 2,
 			expectedPatterns: [][]intergo.Res{
