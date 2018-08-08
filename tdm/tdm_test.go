@@ -4,38 +4,59 @@ import (
 	"testing"
 
 	"github.com/mathetake/intergo"
+	"github.com/mathetake/intergo/tdm"
+
 	"gotest.tools/assert"
 
 	"fmt"
-
-	"github.com/mathetake/intergo/tdm"
 )
 
-type item struct {
-	id int
+type tRanking []int
+
+func (rk tRanking) GetIDByIndex(i int) interface{} {
+	return rk[i]
 }
 
-func (i item) GetID() interface{} {
-	return i.id
+func (rk tRanking) Len() int {
+	return len(rk)
 }
 
-var _ intergo.Item = item{}
+var _ intergo.Ranking = tRanking{}
+
+func TestWeisoiya(t *testing.T) {
+	TDM := &tdm.TeamDraftMultileaving{}
+	RankingA := tRanking{1, 2, 3, 4, 5}
+	RankingB := tRanking{10, 20, 30, 40, 50}
+
+	idxToRk := map[int]tRanking{
+		0: RankingA,
+		1: RankingB,
+	}
+
+	res := TDM.GetInterleavedRanking(4, RankingA, RankingB)
+	iRanking := tRanking{}
+	for _, it := range res {
+		iRanking = append(iRanking, idxToRk[it.RankingIDx][it.ItemIDx])
+	}
+
+	fmt.Println("Result: ", iRanking)
+}
 
 func TestGetInterleavedRanking(t *testing.T) {
-	tdm := &tdm.TeamDraftMultileaving{}
+	TDM := &tdm.TeamDraftMultileaving{}
 
 	cases := []struct {
-		inputRks         []intergo.Items
+		inputRks         []intergo.Ranking
 		num              int
 		expectedPatterns [][]intergo.Res
 	}{
 		{
-			inputRks: []intergo.Items{
-				{
-					item{1}, item{2}, item{3}, item{4}, item{5},
+			inputRks: []intergo.Ranking{
+				tRanking{
+					items: []int{1, 2, 3, 4, 5},
 				},
-				{
-					item{10}, item{20}, item{30}, item{3}, item{3},
+				tRanking{
+					items: []int{10, 20, 30, 40, 50},
 				},
 			},
 			num: 2,
@@ -51,7 +72,7 @@ func TestGetInterleavedRanking(t *testing.T) {
 	for n, tc := range cases {
 		tcc := tc
 		t.Run(fmt.Sprintf("%d-th unit test", n), func(t *testing.T) {
-			actual := tdm.GetInterleavedRanking(tcc.inputRks, tcc.num)
+			actual := TDM.GetInterleavedRanking(tcc.num, tcc.inputRks...)
 			assert.Equal(t, true, len(actual) <= tcc.num)
 
 			var isExpected = false

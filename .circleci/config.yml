@@ -2,7 +2,7 @@ version: 2
 
 jobs:
   build:
-    working_directory: /go/src/github.com/mathetake/gann
+    working_directory: /go/src/github.com/mathetake/intergo
     docker:
       - image: golang:1.10
     steps:

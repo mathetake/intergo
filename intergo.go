@@ -1,9 +1,8 @@
 package intergo
 
-type Items []Item
-
-type Item interface {
-	GetID() interface{}
+type Ranking interface {
+	GetIDByIndex(int) interface{}
+	Len() int
 }
 
 type Res struct {
@@ -15,5 +14,5 @@ type Res struct {
 }
 
 type Interleaving interface {
-	GetInterleavedRanking([]Items, int) []Res
+	GetInterleavedRanking(int, ...Ranking) []Res
 }

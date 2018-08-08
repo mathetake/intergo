@@ -8,7 +8,7 @@ type TeamDraftMultileaving struct{}
 
 var _ intergo.Interleaving = &TeamDraftMultileaving{}
 
-func (tdm *TeamDraftMultileaving) GetInterleavedRanking(rks []intergo.Items, num int) []intergo.Res {
+func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.Ranking) []intergo.Res {
 	var numR = len(rks)
 	res := make([]intergo.Res, 0, num)
 
@@ -28,15 +28,18 @@ func (tdm *TeamDraftMultileaving) GetInterleavedRanking(rks []intergo.Items, num
 
 		// chose one ranking from keys of minRks
 		var selected = getRandomKey(minRks)
+		var rk = rks[selected]
 
 		var bef = len(res)
 
-		for j, item := range rks[selected] {
-			if _, ok := sIDs[item.GetID()]; !ok {
+		for j := 0; j < rk.Len(); j++ {
+			if _, ok := sIDs[rk.GetIDByIndex(j)]; !ok {
 				res = append(res, intergo.Res{
 					RankingIDx: selected,
 					ItemIDx:    j,
 				})
+
+				sIDs[rk.GetIDByIndex(j)] = true
 				break
 			}
 		}
@@ -57,7 +60,6 @@ func (tdm *TeamDraftMultileaving) GetInterleavedRanking(rks []intergo.Items, num
 			}
 		}
 	}
-
 	return res
 }
 
