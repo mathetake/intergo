@@ -4,9 +4,11 @@ A package for interleaving / multileaving ranking generation in go
 
 It is mainly tailored to be used for generating interleaved or multileaved ranking based on the following algorithm
 
+- Optimized Multileaving (in `github.com/mathetake/intergo/om` package)
 - Team Draft Interleaving/Multileaving (in `github.com/mathetake/itergo/tdm` package)
-- Probabilistic Team Draft Interleaving/Multileaving (TODO)
-- Balanced Interleaving/Multileaving
+- Balanced Interleaving/Multileaving (_TODO_)
+
+__NOTE:__ this package aims only at generating a single combined ranking and does not implement the selection of a ranking from multiple combined rankings. 
 
 # How to use
 
@@ -47,15 +49,15 @@ var _ intergo.Ranking = tRanking{}
 
 func main() {
 	TDM := &tdm.TeamDraftMultileaving{}
-	RankingA := tRanking{1, 2, 3, 4, 5,}
-	RankingB := tRanking{10, 20, 30, 40, 50}
+	rankingA := tRanking{1, 2, 3, 4, 5,}
+	rankingB := tRanking{10, 20, 30, 40, 50}
 
 	idxToRk := map[int]tRanking{
-		0: RankingA,
-		1: RankingB,
+		0: rankingA,
+		1: rankingB,
 	}
 
-	res := TDM.GetInterleavedRanking(4, RankingA, RankingB)
+	res := TDM.GetInterleavedRanking(4, rankingA, rankingB)
 	iRanking := tRanking{}
 	for _, it := range res {
 		iRanking = append(iRanking, idxToRk[it.RankingIDx][it.ItemIDx])
@@ -63,14 +65,15 @@ func main() {
 
 	fmt.Println("Result: ", iRanking)
 }
-
 ```
 
 # References
 
-1. Schuth, Anne, et al. "Multileaved comparisons for fast online evaluation." Proceedings of the 23rd ACM International Conference on Conference on Information and Knowledge Management. ACM, 2014.
+1. Radlinski, Filip, Madhu Kurup, and Thorsten Joachims. "How does clickthrough data reflect retrieval quality?." Proceedings of the 17th ACM conference on Information and knowledge management. ACM, 2008.
 
-2. Radlinski, Filip, Madhu Kurup, and Thorsten Joachims. "How does clickthrough data reflect retrieval quality?." Proceedings of the 17th ACM conference on Information and knowledge management. ACM, 2008.
+2. Schuth, Anne, et al. "Multileaved comparisons for fast online evaluation." Proceedings of the 23rd ACM International Conference on Conference on Information and Knowledge Management. ACM, 2014.
+
+3. Manabe, Tomohiro, et al. "A comparative live evaluation of multileaving methods on a commercial cqa search." Proceedings of the 40th International ACM SIGIR Conference on Research and Development in Information Retrieval. ACM, 2017.
 
 
 # license

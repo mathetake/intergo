@@ -1,7 +1,10 @@
 package intergo
 
 type Ranking interface {
+	// GetIDByIndex ... allow algorithms to access items' identifier
 	GetIDByIndex(int) interface{}
+
+	// Len ... to get the "length" of the ranking
 	Len() int
 }
 
