@@ -123,17 +123,15 @@ func TestGetInterleavedRanking(t *testing.T) {
 	}
 }
 
-/*
-
 func TestGetRandomKey(t *testing.T) {
 	tc := struct {
 		numCandidate int
 		numSelection int
 		threshold    float64
 	}{
-		numCandidate: 100,
+		numCandidate: 10,
 		numSelection: 10000000,
-		threshold:    10e-6,
+		threshold:    10e-4,
 	}
 	input := map[int]interface{}{}
 	for i := 0; i < tc.numCandidate; i++ {
@@ -143,17 +141,16 @@ func TestGetRandomKey(t *testing.T) {
 	chosenRatio := map[int]float64{}
 
 	for i := 0; i < tc.numSelection; i++ {
-		chosenRatio[tdm.ExportedGetRandomKey(input)] += 1
+		chosenRatio[tdm.ExportedGetRandomKey(input)] += 1 / float64(tc.numSelection)
 	}
 
-	fmt.Println(chosenRatio)
+	t.Log(chosenRatio)
 
 	for _, v := range chosenRatio {
-		diff := v/float64(tc.numSelection) - 1/float64(tc.numCandidate)
+		diff := v - 1/float64(tc.numCandidate)
 		if diff < 0 {
 			diff = -diff
 		}
 		assert.Equal(t, true, diff < tc.threshold)
 	}
 }
-*/

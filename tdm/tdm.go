@@ -1,6 +1,7 @@
 package tdm
 
 import (
+	"github.com/lukechampine/randmap"
 	"github.com/mathetake/intergo"
 )
 
@@ -64,8 +65,6 @@ func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.
 }
 
 func getRandomKey(m map[int]interface{}) int {
-	for k := range m {
-		return k
-	}
-	return 0
+	k, _ := randmap.Key(m).(int)
+	return k
 }

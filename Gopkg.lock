@@ -13,6 +13,21 @@
   version = "v0.2.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/lukechampine/randmap"
+  packages = [
+    ".",
+    "perm"
+  ]
+  revision = "9e3c222d041309b34f799305d561f5adf3fc0181"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/minio/blake2b-simd"
+  packages = ["."]
+  revision = "3f5f724cb5b182a5c278d6d3d55b40e7f8c2efb4"
+
+[[projects]]
   name = "github.com/pkg/errors"
   packages = ["."]
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
@@ -33,6 +48,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "6b64e4bc4b327df1602a94152634cfd4cf4c4b56cd1260f7c0a813eabd242a2f"
+  inputs-digest = "9af09f7d16cc64962739b21d075ee252de67b801c7260cf022604494006d15c2"
   solver-name = "gps-cdcl"
   solver-version = 1
