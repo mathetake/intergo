@@ -8,7 +8,7 @@ It is mainly tailored to be used for generating interleaved or multileaved ranki
 - Team Draft Interleaving/Multileaving (in `github.com/mathetake/itergo/tdm` package)
 - Balanced Interleaving/Multileaving (_TODO_)
 
-__NOTE:__ this package aims only at generating a single combined ranking and does not implement the selection of a ranking from multiple combined rankings. 
+__NOTE:__ this package aims only at generating a single combined ranking and does not implement the evaluation functions of the given rankings.
 
 # How to use
 
@@ -57,7 +57,7 @@ func main() {
 		1: rankingB,
 	}
 
-	res := TDM.GetInterleavedRanking(4, rankingA, rankingB)
+	res, _ := TDM.GetInterleavedRanking(4, rankingA, rankingB)
 	iRanking := tRanking{}
 	for _, it := range res {
 		iRanking = append(iRanking, idxToRk[it.RankingIDx][it.ItemIDx])

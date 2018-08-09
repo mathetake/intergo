@@ -17,5 +17,5 @@ type Res struct {
 }
 
 type Interleaving interface {
-	GetInterleavedRanking(int, ...Ranking) []Res
+	GetInterleavedRanking(int, ...Ranking) ([]Res, error)
 }
