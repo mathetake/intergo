@@ -1,4 +1,7 @@
-# intergo
+# intergo 
+[![CircleCI](https://circleci.com/gh/mathetake/intergo.svg?style=shield&circle-token=89a8a65229dd121bd61be11222cdc2a0416cef22)](https://circleci.com/gh/mathetake/intergo)
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
+
 
 A package for interleaving / multileaving ranking generation in go
 

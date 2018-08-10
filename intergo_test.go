@@ -51,7 +51,7 @@ func BenchmarkMultileaving(b *testing.B) {
 				inputNum, fxx.inputRankingItemNum, fxx.interleavedRankingItemNum,
 			)
 
-			b.Run(fmt.Sprintf("[[%d-th bench on Team Draft Multileaving]", n), func(b *testing.B) {
+			b.Run(fmt.Sprintf("[[%d-th bench on Team Draft Multileaving]]", n), func(b *testing.B) {
 				benchmark(fxx, &tdm.TeamDraftMultileaving{}, b)
 			})
 
