@@ -6,6 +6,8 @@ import (
 
 	"sync"
 
+	"fmt"
+
 	"github.com/mathetake/intergo"
 	"github.com/pkg/errors"
 	"gonum.org/v1/gonum/mat"
@@ -15,7 +17,7 @@ import (
 type OptimizedMultiLeaving struct{}
 
 const (
-	numSampling = 200
+	numSampling = 10
 )
 
 var _ intergo.Interleaving = &OptimizedMultiLeaving{}
@@ -47,12 +49,8 @@ func (o *OptimizedMultiLeaving) GetInterleavedRanking(num int, rks ...intergo.Ra
 	}()
 
 	// get LHS of constraint
-	wg.Add(1)
 	var cMat = &mat.Dense{}
-	go func() {
-		cMat = o.getConstraintMatrix(rks, cRks)
-		wg.Done()
-	}()
+	cMat = o.getConstraintMatrix(rks, cRks)
 
 	// RHS of constraint
 	b := make([]float64, 1+num*len(rks))
@@ -60,6 +58,9 @@ func (o *OptimizedMultiLeaving) GetInterleavedRanking(num int, rks ...intergo.Ra
 
 	// solve linear programming
 	wg.Wait()
+
+	fmt.Println(mat.Formatted(cMat))
+	fmt.Println("c: ", c)
 	_, ps, err := lp.Simplex(c, cMat, b, 10e-5, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "lp.Simplex failed.")
@@ -82,8 +83,7 @@ func (*OptimizedMultiLeaving) getConstraintMatrix(rks []intergo.Ranking, cRks []
 
 	var wg = sync.WaitGroup{}
 
-	// len(cRks[0]) = r, len(rks) = j
-	ret := mat.NewDense(1+numInputRankings*numItem, numCombinedList, nil)
+	ret := mat.NewDense(numCombinedList, numCombinedList, nil)
 
 	wg.Add(1)
 	go func() {
@@ -93,27 +93,41 @@ func (*OptimizedMultiLeaving) getConstraintMatrix(rks []intergo.Ranking, cRks []
 		wg.Done()
 	}()
 
-	for jj := 0; jj < numInputRankings; jj++ {
-		j := jj
-		for rr := 0; rr < numItem; rr++ {
-			r := rr
-			for kk := 0; kk < numCombinedList; kk++ {
-				k := kk
-				wg.Add(1)
-				go func() {
-					var c float64
-					for i := 0; i <= r; i++ {
-						var s = i + 1
-						if cRks[k][i].RankingIDx == j {
-							s *= s
-						} else {
-							s *= rks[j].Len()
-						}
-						c += 1 / float64(s)
-					}
-					ret.Set(1+j*(1+r), k, c)
-					wg.Done()
-				}()
+	for rr := 0; rr < numItem; rr++ {
+		r := rr
+		for kk := 0; kk < numCombinedList; kk++ {
+			k := kk
+			for jj := 0; jj < numInputRankings; jj++ {
+				j := jj
+				var c float64
+
+				var sj = r + 1
+				if cRks[k][r].RankingIDx == j {
+					sj *= sj
+				} else {
+					sj *= 1 + rks[j].Len()
+				}
+
+				c += 1 / float64(sj)
+
+				var jPrime = j + 1
+				if j+1 == numInputRankings {
+					jPrime = 0
+				}
+
+				sj = r + 1
+				if cRks[k][r].RankingIDx == jPrime {
+					sj *= sj
+				} else {
+					sj *= 1 + rks[jPrime].Len()
+				}
+
+				c -= 1 / float64(sj)
+
+				if r > 0 {
+					c += ret.At(1+(r-1)*(numInputRankings)+j, k)
+				}
+				ret.Set(1+r*(numInputRankings)+j, k, c)
 			}
 		}
 	}
