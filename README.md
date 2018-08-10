@@ -1,12 +1,15 @@
-# intergo
+# intergo 
+[![CircleCI](https://circleci.com/gh/mathetake/intergo.svg?style=shield&circle-token=89a8a65229dd121bd61be11222cdc2a0416cef22)](https://circleci.com/gh/mathetake/intergo)
+[![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
+
 
 A package for interleaving / multileaving ranking generation in go
 
 It is mainly tailored to be used for generating interleaved or multileaved ranking based on the following algorithm
 
+- Balanced Interleaving/Multileaving (in `github.com/mathetake/itergo/bm` package)
 - Optimized Multileaving (in `github.com/mathetake/intergo/om` package)
 - Team Draft Interleaving/Multileaving (in `github.com/mathetake/itergo/tdm` package)
-- Balanced Interleaving/Multileaving (_TODO_)
 
 __NOTE:__ this package aims only at generating a single combined ranking and does not implement the evaluation functions of the given rankings.
 

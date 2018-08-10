@@ -1,14 +1,15 @@
-package tdm_test
+package bm_test
 
 import (
 	"testing"
 
 	"github.com/mathetake/intergo"
-	"github.com/mathetake/intergo/tdm"
 
 	"gotest.tools/assert"
 
 	"fmt"
+
+	"github.com/mathetake/intergo/bm"
 )
 
 type tRanking []int
@@ -23,8 +24,8 @@ func (rk tRanking) Len() int {
 
 var _ intergo.Ranking = tRanking{}
 
-func TestTeamDraftMultileaving(t *testing.T) {
-	tdMultileaving := &tdm.TeamDraftMultileaving{}
+func TestBalancedMultileaving(t *testing.T) {
+	bMultileaving := &bm.BalancedMultileaving{}
 
 	cases := []struct {
 		inputRks         []intergo.Ranking
@@ -43,8 +44,16 @@ func TestTeamDraftMultileaving(t *testing.T) {
 					intergo.Res{RankingIDx: 1, ItemIDx: 0},
 				},
 				{
+					intergo.Res{RankingIDx: 0, ItemIDx: 0},
+					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+				},
+				{
 					intergo.Res{RankingIDx: 1, ItemIDx: 0},
 					intergo.Res{RankingIDx: 0, ItemIDx: 0},
+				},
+				{
+					intergo.Res{RankingIDx: 1, ItemIDx: 0},
+					intergo.Res{RankingIDx: 1, ItemIDx: 1},
 				},
 			},
 		},
@@ -60,36 +69,40 @@ func TestTeamDraftMultileaving(t *testing.T) {
 					intergo.Res{RankingIDx: 1, ItemIDx: 1},
 				},
 				{
+					intergo.Res{RankingIDx: 0, ItemIDx: 0},
+					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+				},
+				{
 					intergo.Res{RankingIDx: 1, ItemIDx: 0},
 					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+				},
+				{
+					intergo.Res{RankingIDx: 1, ItemIDx: 0},
+					intergo.Res{RankingIDx: 1, ItemIDx: 1},
 				},
 			},
 		},
 		{
 			inputRks: []intergo.Ranking{
 				tRanking{1, 2, 3, 4, 5},
-				tRanking{1, 20, 30, 40, 50},
+				tRanking{1, 1, 30, 40, 50},
 			},
-			num: 3,
+			num: 2,
 			expectedPatterns: [][]intergo.Res{
 				{
 					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
-				},
-				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
-				},
-				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
-					intergo.Res{RankingIDx: 0, ItemIDx: 2},
+					intergo.Res{RankingIDx: 1, ItemIDx: 2},
 				},
 				{
 					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
+					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+				},
+				{
+					intergo.Res{RankingIDx: 1, ItemIDx: 0},
+					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+				},
+				{
+					intergo.Res{RankingIDx: 1, ItemIDx: 0},
 					intergo.Res{RankingIDx: 1, ItemIDx: 2},
 				},
 			},
@@ -99,7 +112,7 @@ func TestTeamDraftMultileaving(t *testing.T) {
 	for n, tc := range cases {
 		tcc := tc
 		t.Run(fmt.Sprintf("%d-th unit test", n), func(t *testing.T) {
-			actual, _ := tdMultileaving.GetInterleavedRanking(tcc.num, tcc.inputRks...)
+			actual, _ := bMultileaving.GetInterleavedRanking(tcc.num, tcc.inputRks...)
 			t.Log("actual: ", actual)
 			assert.Equal(t, true, len(actual) <= tcc.num)
 
@@ -120,37 +133,5 @@ func TestTeamDraftMultileaving(t *testing.T) {
 			}
 			assert.Equal(t, true, isExpected)
 		})
-	}
-}
-
-func TestGetRandomKey(t *testing.T) {
-	tc := struct {
-		numCandidate int
-		numSelection int
-		threshold    float64
-	}{
-		numCandidate: 10,
-		numSelection: 1000000,
-		threshold:    10e-4,
-	}
-	input := map[int]interface{}{}
-	for i := 0; i < tc.numCandidate; i++ {
-		input[i] = true
-	}
-
-	chosenRatio := map[int]float64{}
-
-	for i := 0; i < tc.numSelection; i++ {
-		chosenRatio[tdm.ExportedGetRandomKey(input)] += 1 / float64(tc.numSelection)
-	}
-
-	t.Log(chosenRatio)
-
-	for _, v := range chosenRatio {
-		diff := v - 1/float64(tc.numCandidate)
-		if diff < 0 {
-			diff = -diff
-		}
-		assert.Equal(t, true, diff < tc.threshold)
 	}
 }
