@@ -24,7 +24,9 @@ func (rk tRanking) Len() int {
 var _ intergo.Ranking = tRanking{}
 
 func TestGetInterleavedRanking(t *testing.T) {
-	o := &om.OptimizedMultiLeaving{}
+	o := &om.OptimizedMultiLeaving{
+		NumSampling: 100,
+	}
 
 	cases := []struct {
 		num           int
