@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/mathetake/intergo"
+	"github.com/pkg/errors"
 )
 
 type OptimizedMultiLeaving struct {
@@ -26,6 +27,10 @@ func init() {
 // We omit the unbiased constraint and only take `sensitivity` into account. Then we sample a ranking
 // according to calculated sensitivities defined by equation (1) in [Manabe, Tomohiro, et al., 2017]
 func (o *OptimizedMultiLeaving) GetInterleavedRanking(num int, rks ...intergo.Ranking) ([]intergo.Res, error) {
+
+	if num < 1 {
+		return nil, errors.Errorf("invalid NumSampling: %d", o.NumSampling)
+	}
 
 	var wg sync.WaitGroup
 	cRks := make([][]intergo.Res, o.NumSampling)

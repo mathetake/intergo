@@ -4,9 +4,9 @@ A package for interleaving / multileaving ranking generation in go
 
 It is mainly tailored to be used for generating interleaved or multileaved ranking based on the following algorithm
 
+- Balanced Interleaving/Multileaving (in `github.com/mathetake/itergo/bm` package)
 - Optimized Multileaving (in `github.com/mathetake/intergo/om` package)
 - Team Draft Interleaving/Multileaving (in `github.com/mathetake/itergo/tdm` package)
-- Balanced Interleaving/Multileaving (_TODO_)
 
 __NOTE:__ this package aims only at generating a single combined ranking and does not implement the evaluation functions of the given rankings.
 
