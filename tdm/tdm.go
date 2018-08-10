@@ -9,7 +9,7 @@ type TeamDraftMultileaving struct{}
 
 var _ intergo.Interleaving = &TeamDraftMultileaving{}
 
-func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.Ranking) []intergo.Res {
+func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.Ranking) ([]intergo.Res, error) {
 	var numR = len(rks)
 	res := make([]intergo.Res, 0, num)
 
@@ -61,7 +61,7 @@ func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.
 			}
 		}
 	}
-	return res
+	return res, nil
 }
 
 func getRandomKey(m map[int]interface{}) int {
