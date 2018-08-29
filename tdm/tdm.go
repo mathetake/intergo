@@ -18,8 +18,11 @@ func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.
 
 	// minRks have rankings' index whose number of selected items is minimum
 	minRks := map[int]interface{}{}
+	// lastIdx has a last index of the indexed ranking
+	lastIdx := map[int]int{}
 	for i := 0; i < numR; i++ {
 		minRks[i] = true
+		lastIdx[i] = 0
 	}
 
 	// The fact that the index stored in usedUpRks means it is already used up.
@@ -33,7 +36,7 @@ func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.
 
 		var bef = len(res)
 
-		for j := 0; j < rk.Len(); j++ {
+		for j := lastIdx[selected]; j < rk.Len(); j++ {
 			if _, ok := sIDs[rk.GetIDByIndex(j)]; !ok {
 				res = append(res, intergo.Res{
 					RankingIDx: selected,
@@ -41,6 +44,7 @@ func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.
 				})
 
 				sIDs[rk.GetIDByIndex(j)] = true
+				lastIdx[selected] = j
 				break
 			}
 		}
