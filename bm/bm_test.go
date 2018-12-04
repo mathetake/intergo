@@ -1,15 +1,12 @@
 package bm_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/mathetake/intergo"
-
-	"gotest.tools/assert"
-
-	"fmt"
-
 	"github.com/mathetake/intergo/bm"
+	"gotest.tools/assert"
 )
 
 type tRanking []int

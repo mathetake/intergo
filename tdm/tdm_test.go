@@ -1,14 +1,12 @@
 package tdm_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/mathetake/intergo"
 	"github.com/mathetake/intergo/tdm"
-
 	"gotest.tools/assert"
-
-	"fmt"
 )
 
 type tRanking []int
@@ -123,34 +121,89 @@ func TestTeamDraftMultileaving(t *testing.T) {
 	}
 }
 
-func TestGetRandomKey(t *testing.T) {
-	tc := struct {
-		numCandidate int
-		numSelection int
-		threshold    float64
+func TestPopRandomIdx(t *testing.T) {
+	for i, cc := range []struct {
+		target []int
+		expLen int
 	}{
-		numCandidate: 10,
-		numSelection: 1000000,
-		threshold:    10e-4,
+		{
+			target: []int{1},
+			expLen: 0,
+		},
+		{
+			target: []int{1, 2, 3, 4},
+			expLen: 3,
+		},
+		{
+			target: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+			expLen: 9,
+		},
+	} {
+		c := cc
+		t.Run(fmt.Sprintf("%d-th case", i), func(t *testing.T) {
+			actualS, actualP := tdm.ExportedPopRandomIdx(c.target)
+			assert.Equal(t, c.expLen, len(actualP))
+
+			isIncluded := false
+			for _, actual := range actualP {
+				if actual == actualS {
+					isIncluded = true
+				}
+			}
+
+			assert.Equal(t, false, isIncluded)
+		})
 	}
-	input := map[int]interface{}{}
-	for i := 0; i < tc.numCandidate; i++ {
-		input[i] = true
+}
+
+func TestTeamDraftMultileaving_RankingRatio(t *testing.T) {
+	ml := &tdm.TeamDraftMultileaving{}
+
+	for i, cc := range []struct {
+		itemNum, rankingNum, returnedNum int
+		threshold                        float64
+	}{
+		{1e2, 3, 10, 1e-1},
+		{1e3, 3, 100, 1e-2},
+		{1e4, 3, 1000, 1e-3},
+		{1e5, 3, 10000, 1e-4},
+	} {
+		c := cc
+		t.Run(fmt.Sprintf("%d-th case", i), func(t *testing.T) {
+			rks := getRankings(c.itemNum, c.rankingNum)
+
+			res, err := ml.GetInterleavedRanking(c.returnedNum, rks...)
+			if err != nil {
+				t.Fatalf("GetInterleavedRanking failed: %v", err)
+			}
+
+			counts := map[int]int{}
+			for _, it := range res {
+				counts[it.RankingIDx]++
+			}
+			fmt.Println(counts)
+
+			for _, v := range counts {
+				diff := float64(v)/float64(c.returnedNum) - float64(1)/float64(c.rankingNum)
+
+				if diff < 0 {
+					diff *= -1
+				}
+
+				assert.Equal(t, true, diff < c.threshold)
+			}
+		})
 	}
+}
 
-	chosenRatio := map[int]float64{}
-
-	for i := 0; i < tc.numSelection; i++ {
-		chosenRatio[tdm.ExportedGetRandomKey(input)] += 1 / float64(tc.numSelection)
-	}
-
-	t.Log(chosenRatio)
-
-	for _, v := range chosenRatio {
-		diff := v - 1/float64(tc.numCandidate)
-		if diff < 0 {
-			diff = -diff
+func getRankings(itemNum, RankingNum int) []intergo.Ranking {
+	rks := make([]intergo.Ranking, RankingNum)
+	for i := 0; i < RankingNum; i++ {
+		rk := tRanking{}
+		for j := 0; j < itemNum; j++ {
+			rk = append(rk, i*itemNum+j)
 		}
-		assert.Equal(t, true, diff < tc.threshold)
+		rks[i] = rk
 	}
+	return rks
 }
