@@ -155,3 +155,55 @@ func TestPopRandomIdx(t *testing.T) {
 		})
 	}
 }
+
+func TestTeamDraftMultileaving_RankingRatio(t *testing.T) {
+	ml := &tdm.TeamDraftMultileaving{}
+
+	for i, cc := range []struct {
+		itemNum, rankingNum, returnedNum int
+		threshold                        float64
+	}{
+		{1e2, 3, 10, 1e-1},
+		{1e3, 3, 100, 1e-2},
+		{1e4, 3, 1000, 1e-3},
+		{1e5, 3, 10000, 1e-4},
+	} {
+		c := cc
+		t.Run(fmt.Sprintf("%d-th case", i), func(t *testing.T) {
+			rks := getRankings(c.itemNum, c.rankingNum)
+
+			res, err := ml.GetInterleavedRanking(c.returnedNum, rks...)
+			if err != nil {
+				t.Fatalf("GetInterleavedRanking failed: %v", err)
+			}
+
+			counts := map[int]int{}
+			for _, it := range res {
+				counts[it.RankingIDx]++
+			}
+			fmt.Println(counts)
+
+			for _, v := range counts {
+				diff := float64(v)/float64(c.returnedNum) - float64(1)/float64(c.rankingNum)
+
+				if diff < 0 {
+					diff *= -1
+				}
+
+				assert.Equal(t, true, diff < c.threshold)
+			}
+		})
+	}
+}
+
+func getRankings(itemNum, RankingNum int) []intergo.Ranking {
+	rks := make([]intergo.Ranking, RankingNum)
+	for i := 0; i < RankingNum; i++ {
+		rk := tRanking{}
+		for j := 0; j < itemNum; j++ {
+			rk = append(rk, i*itemNum+j)
+		}
+		rks[i] = rk
+	}
+	return rks
+}
