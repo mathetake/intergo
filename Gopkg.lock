@@ -15,25 +15,6 @@
   version = "v0.2.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:374de5616a7287bd49d888888422f76321b2f84ae69544b4b040c2009704e3a4"
-  name = "github.com/lukechampine/randmap"
-  packages = [
-    ".",
-    "perm",
-  ]
-  pruneopts = "UT"
-  revision = "9e3c222d041309b34f799305d561f5adf3fc0181"
-
-[[projects]]
-  branch = "master"
-  digest = "1:130cefe87d7eeefc824978dcb78e35672d4c49a11f25c153fbf0cfd952756fa3"
-  name = "github.com/minio/blake2b-simd"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "3f5f724cb5b182a5c278d6d3d55b40e7f8c2efb4"
-
-[[projects]]
   digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
   name = "github.com/pkg/errors"
   packages = ["."]
@@ -59,7 +40,6 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/lukechampine/randmap",
     "github.com/pkg/errors",
     "gotest.tools/assert",
   ]

@@ -34,34 +34,28 @@ var fixtures = []fixture{
 	{inputRankingItemNum: 1000, interleavedRankingItemNum: 200},
 }
 
-var inputRankingNumToBenchFunction = map[int]func(fx fixture, il intergo.Interleaving, b *testing.B){
-	2:  benchmarkWith2Input,
-	5:  benchmarkWith5Input,
-	10: benchmarkWith10Input,
-}
-
 func BenchmarkMultileaving(b *testing.B) {
-	for inputNum, benchmark := range inputRankingNumToBenchFunction {
+	for _, inputRankingNum := range []int{2, 10, 50, 100} {
 		for n, fx := range fixtures {
 			fxx := fx
 			b.ReportAllocs()
 			fmt.Println("")
 			fmt.Printf(
 				"inputRankingNum: %d, inputRankingItemNum: %d, interleavedRankingItemNum: %d\n",
-				inputNum, fxx.inputRankingItemNum, fxx.interleavedRankingItemNum,
+				inputRankingNum, fxx.inputRankingItemNum, fxx.interleavedRankingItemNum,
 			)
 
 			b.Run(fmt.Sprintf("[[%d-th bench on Team Draft Multileaving]]", n), func(b *testing.B) {
-				benchmark(fxx, &tdm.TeamDraftMultileaving{}, b)
+				benchmarkInputNum(fxx, inputRankingNum, &tdm.TeamDraftMultileaving{}, b)
 			})
 
 			b.Run(fmt.Sprintf("[[%d-th bench on Balanced Multileaving]]", n), func(b *testing.B) {
-				benchmark(fxx, &bm.BalancedMultileaving{}, b)
+				benchmarkInputNum(fxx, inputRankingNum, &bm.BalancedMultileaving{}, b)
 			})
 
 			for _, samplingSize := range []int{2, 10, 50, 100} {
 				b.Run(fmt.Sprintf("[[%d-th bench on Optimized Multileaving with sampling size: %d]]", n, samplingSize), func(b *testing.B) {
-					benchmark(fxx, &om.OptimizedMultiLeaving{samplingSize}, b)
+					benchmarkInputNum(fxx, inputRankingNum, &om.OptimizedMultiLeaving{samplingSize}, b)
 				})
 			}
 			fmt.Println("")
@@ -69,35 +63,16 @@ func BenchmarkMultileaving(b *testing.B) {
 	}
 }
 
-func benchmarkWith2Input(fx fixture, il intergo.Interleaving, b *testing.B) {
-	rks := getRankings(fx, 2)
+func benchmarkInputNum(fx fixture, inputRankingNum int, il intergo.Interleaving, b *testing.B) {
+	rks := getRankings(fx, inputRankingNum)
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		il.GetInterleavedRanking(fx.interleavedRankingItemNum, rks[0], rks[1])
+		il.GetInterleavedRanking(fx.interleavedRankingItemNum, rks...)
 	}
 }
 
-func benchmarkWith5Input(fx fixture, il intergo.Interleaving, b *testing.B) {
-	rks := getRankings(fx, 5)
-	b.ResetTimer()
-	for n := 0; n < b.N; n++ {
-		il.GetInterleavedRanking(fx.interleavedRankingItemNum, rks[0], rks[1], rks[2], rks[3], rks[4], rks[4])
-	}
-}
-
-func benchmarkWith10Input(fx fixture, il intergo.Interleaving, b *testing.B) {
-	rks := getRankings(fx, 10)
-	b.ResetTimer()
-	for n := 0; n < b.N; n++ {
-		il.GetInterleavedRanking(
-			fx.interleavedRankingItemNum, rks[0], rks[1], rks[2], rks[3],
-			rks[4], rks[5], rks[6], rks[7], rks[8], rks[9],
-		)
-	}
-}
-
-func getRankings(fx fixture, inputRankingNum int) []tRanking {
-	rks := make([]tRanking, inputRankingNum)
+func getRankings(fx fixture, inputRankingNum int) []intergo.Ranking {
+	rks := make([]intergo.Ranking, inputRankingNum)
 	for i := 0; i < inputRankingNum; i++ {
 		rk := tRanking{}
 		for j := 0; j < fx.inputRankingItemNum; j++ {
