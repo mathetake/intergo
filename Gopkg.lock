@@ -2,52 +2,66 @@
 
 
 [[projects]]
+  digest = "1:2e3c336fc7fde5c984d2841455a658a6d626450b1754a854b3b32e7a8f49a07a"
   name = "github.com/google/go-cmp"
   packages = [
     "cmp",
     "cmp/internal/diff",
     "cmp/internal/function",
-    "cmp/internal/value"
+    "cmp/internal/value",
   ]
+  pruneopts = "UT"
   revision = "3af367b6b30c263d47e8895973edcca9a49cf029"
   version = "v0.2.0"
 
 [[projects]]
   branch = "master"
+  digest = "1:374de5616a7287bd49d888888422f76321b2f84ae69544b4b040c2009704e3a4"
   name = "github.com/lukechampine/randmap"
   packages = [
     ".",
-    "perm"
+    "perm",
   ]
+  pruneopts = "UT"
   revision = "9e3c222d041309b34f799305d561f5adf3fc0181"
 
 [[projects]]
   branch = "master"
+  digest = "1:130cefe87d7eeefc824978dcb78e35672d4c49a11f25c153fbf0cfd952756fa3"
   name = "github.com/minio/blake2b-simd"
   packages = ["."]
+  pruneopts = "UT"
   revision = "3f5f724cb5b182a5c278d6d3d55b40e7f8c2efb4"
 
 [[projects]]
+  digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
   name = "github.com/pkg/errors"
   packages = ["."]
+  pruneopts = "UT"
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
   version = "v0.8.0"
 
 [[projects]]
+  digest = "1:225f565dc88a02cebe329d3a49d0ca125789091af952a5cc4fde6312c34ce44d"
   name = "gotest.tools"
   packages = [
     "assert",
     "assert/cmp",
     "internal/difflib",
     "internal/format",
-    "internal/source"
+    "internal/source",
   ]
+  pruneopts = "UT"
   revision = "b6e20af1ed078cd01a6413b734051a292450b4cb"
   version = "v2.1.0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9af09f7d16cc64962739b21d075ee252de67b801c7260cf022604494006d15c2"
+  input-imports = [
+    "github.com/lukechampine/randmap",
+    "github.com/pkg/errors",
+    "gotest.tools/assert",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -1,5 +1,5 @@
 package tdm
 
-func ExportedGetRandomKey(m map[int]interface{}) int {
-	return getRandomKey(m)
+func ExportedPopRandomIdx(target []int) (int, []int) {
+	return popRandomIdx(target)
 }

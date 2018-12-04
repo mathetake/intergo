@@ -123,34 +123,37 @@ func TestTeamDraftMultileaving(t *testing.T) {
 	}
 }
 
-func TestGetRandomKey(t *testing.T) {
-	tc := struct {
-		numCandidate int
-		numSelection int
-		threshold    float64
+func TestPopRandomIdx(t *testing.T) {
+	for i, cc := range []struct {
+		target []int
+		expLen int
 	}{
-		numCandidate: 10,
-		numSelection: 1000000,
-		threshold:    10e-4,
-	}
-	input := map[int]interface{}{}
-	for i := 0; i < tc.numCandidate; i++ {
-		input[i] = true
-	}
+		{
+			target: []int{1},
+			expLen: 0,
+		},
+		{
+			target: []int{1, 2, 3, 4},
+			expLen: 3,
+		},
+		{
+			target: []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+			expLen: 9,
+		},
+	} {
+		c := cc
+		t.Run(fmt.Sprintf("%d-th case", i), func(t *testing.T) {
+			actualS, actualP := tdm.ExportedPopRandomIdx(c.target)
+			assert.Equal(t, c.expLen, len(actualP))
 
-	chosenRatio := map[int]float64{}
+			isIncluded := false
+			for _, actual := range actualP {
+				if actual == actualS {
+					isIncluded = true
+				}
+			}
 
-	for i := 0; i < tc.numSelection; i++ {
-		chosenRatio[tdm.ExportedGetRandomKey(input)] += 1 / float64(tc.numSelection)
-	}
-
-	t.Log(chosenRatio)
-
-	for _, v := range chosenRatio {
-		diff := v - 1/float64(tc.numCandidate)
-		if diff < 0 {
-			diff = -diff
-		}
-		assert.Equal(t, true, diff < tc.threshold)
+			assert.Equal(t, false, isIncluded)
+		})
 	}
 }

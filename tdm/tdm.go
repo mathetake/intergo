@@ -1,8 +1,8 @@
 package tdm
 
 import (
-	"github.com/lukechampine/randmap"
 	"github.com/mathetake/intergo"
+	"math/rand"
 )
 
 type TeamDraftMultileaving struct{}
@@ -17,11 +17,12 @@ func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.
 	sIDs := map[interface{}]interface{}{}
 
 	// minRks have rankings' index whose number of selected items is minimum
-	minRks := map[int]interface{}{}
+	minRks := make([]int, 0, numR)
+
 	// lastIdx has a last index of the indexed ranking
 	lastIdx := map[int]int{}
 	for i := 0; i < numR; i++ {
-		minRks[i] = true
+		minRks = append(minRks, i)
 		lastIdx[i] = 0
 	}
 
@@ -31,7 +32,8 @@ func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.
 	for len(res) < num && len(usedUpRks) != numR {
 
 		// chose one ranking from keys of minRks
-		var selected = getRandomKey(minRks)
+		var selected int
+		selected, minRks = popRandomIdx(minRks)
 		var rk = rks[selected]
 
 		var bef = len(res)
@@ -53,14 +55,12 @@ func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.
 			usedUpRks[selected] = true
 		}
 
-		// delete the selected ranking from minRks
-		delete(minRks, selected)
-
 		if len(minRks) == 0 {
 			// restore the targets
+			minRks = make([]int, 0, numR)
 			for i := 0; i < numR; i++ {
 				if !usedUpRks[i] {
-					minRks[i] = true
+					minRks = append(minRks, i)
 				}
 			}
 		}
@@ -68,7 +68,24 @@ func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.
 	return res, nil
 }
 
-func getRandomKey(m map[int]interface{}) int {
-	k, _ := randmap.Key(m).(int)
-	return k
+func popRandomIdx(target []int) (int, []int) {
+	if len(target) == 1 {
+		return target[0], []int{}
+	}
+
+	selectedIDx := rand.Intn(len(target))
+	selected := target[selectedIDx]
+
+	popped := make([]int, 0, len(target) -1)
+
+	for i, idx := range target {
+		if i < selectedIDx {
+			popped = append(popped, idx)
+		} else if i == selectedIDx {
+			continue
+		} else {
+			popped = append(popped, idx)
+		}
+	}
+	return selected, popped
 }
