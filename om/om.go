@@ -2,9 +2,8 @@ package om
 
 import (
 	"math/rand"
-	"time"
-
 	"sync"
+	"time"
 
 	"github.com/mathetake/intergo"
 	"github.com/pkg/errors"

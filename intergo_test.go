@@ -2,9 +2,8 @@
 package intergo_test
 
 import (
-	"testing"
-
 	"fmt"
+	"testing"
 
 	"github.com/mathetake/intergo"
 	"github.com/mathetake/intergo/bm"

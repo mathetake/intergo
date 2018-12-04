@@ -1,14 +1,12 @@
 package om_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/mathetake/intergo"
 	"github.com/mathetake/intergo/om"
-
 	"gotest.tools/assert"
-
-	"fmt"
 )
 
 type tRanking []int

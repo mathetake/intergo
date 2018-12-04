@@ -1,8 +1,9 @@
 package tdm
 
 import (
-	"github.com/mathetake/intergo"
 	"math/rand"
+
+	"github.com/mathetake/intergo"
 )
 
 type TeamDraftMultileaving struct{}
@@ -57,7 +58,7 @@ func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.
 
 		if len(minRks) == 0 {
 			// restore the targets
-			minRks = make([]int, 0, numR)
+			minRks = make([]int, 0, numR-len(usedUpRks))
 			for i := 0; i < numR; i++ {
 				if !usedUpRks[i] {
 					minRks = append(minRks, i)
@@ -76,7 +77,7 @@ func popRandomIdx(target []int) (int, []int) {
 	selectedIDx := rand.Intn(len(target))
 	selected := target[selectedIDx]
 
-	popped := make([]int, 0, len(target) -1)
+	popped := make([]int, 0, len(target)-1)
 
 	for i, idx := range target {
 		if i < selectedIDx {

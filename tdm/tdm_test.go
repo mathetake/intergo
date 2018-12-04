@@ -1,14 +1,12 @@
 package tdm_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/mathetake/intergo"
 	"github.com/mathetake/intergo/tdm"
-
 	"gotest.tools/assert"
-
-	"fmt"
 )
 
 type tRanking []int
