@@ -7,6 +7,7 @@ import (
 
 	"github.com/mathetake/intergo"
 	"github.com/pkg/errors"
+	"math"
 )
 
 type OptimizedMultiLeaving struct {
@@ -34,23 +35,23 @@ func (o *OptimizedMultiLeaving) GetInterleavedRanking(num int, rks ...intergo.Ra
 	var wg sync.WaitGroup
 	cRks := make([][]intergo.Res, o.NumSampling)
 	for i := 0; i < o.NumSampling; i++ {
-		ii := i
 		wg.Add(1)
-		go func() {
-			cRks[ii] = o.prefixConstraintSampling(num, rks...)
+		go func(i int) {
+			cRks[i] = o.prefixConstraintSampling(num, rks...)
 			wg.Done()
-		}()
+		}(i)
 	}
 	wg.Wait()
 
 	// calc Insensitivity of sampled rankings
 	ins := o.calcInsensitivity(rks, cRks)
 
-	var max float64
+	// init +inf value
+	min := math.Inf(0)
 	var maxIDx int
 	for i, v := range ins {
-		if v > max {
-			maxIDx, max = i, v
+		if v < min {
+			maxIDx, min = i, v
 		}
 	}
 	return cRks[maxIDx], nil
@@ -62,10 +63,9 @@ func (*OptimizedMultiLeaving) calcInsensitivity(rks []intergo.Ranking, cRks [][]
 	var iRkNum = len(rks)
 	var wg sync.WaitGroup
 
-	for kk := 0; kk < len(cRks); kk++ {
-		k := kk
+	for k := 0; k < len(cRks); k++ {
 		wg.Add(1)
-		go func() {
+		go func(k int) {
 			var mean float64
 
 			jToScoreMap := make([]float64, iRkNum)
@@ -93,7 +93,7 @@ func (*OptimizedMultiLeaving) calcInsensitivity(rks []intergo.Ranking, cRks [][]
 			}
 			res[k] = score
 			wg.Done()
-		}()
+		}(k)
 	}
 	wg.Wait()
 	return res
