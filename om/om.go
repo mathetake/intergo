@@ -4,10 +4,10 @@ import (
 	"math/rand"
 	"sync"
 	"time"
+	"math"
 
 	"github.com/mathetake/intergo"
 	"github.com/pkg/errors"
-	"math"
 )
 
 type OptimizedMultiLeaving struct {
