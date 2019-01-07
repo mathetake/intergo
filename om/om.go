@@ -27,7 +27,6 @@ func init() {
 // We omit the unbiased constraint and only take `sensitivity` into account. Then we sample a ranking
 // according to calculated sensitivities defined by equation (1) in [Manabe, Tomohiro, et al., 2017]
 func (o *OptimizedMultiLeaving) GetInterleavedRanking(num int, rks ...intergo.Ranking) ([]intergo.Res, error) {
-
 	if num < 1 {
 		return nil, errors.Errorf("invalid NumSampling: %d", o.NumSampling)
 	}
@@ -67,18 +66,26 @@ func (*OptimizedMultiLeaving) calcInsensitivity(rks []intergo.Ranking, cRks [][]
 		wg.Add(1)
 		go func(k int) {
 			var mean float64
+			idToPlacement := map[interface{}]int{}
+
+			for i := 0; i < len(cRks[k]); i++ {
+				item := rks[cRks[k][i].RankingIDx].GetIDByIndex(cRks[k][i].ItemIDx)
+				idToPlacement[item] = i + 1
+			}
 
 			jToScoreMap := make([]float64, iRkNum)
 			for j := 0; j < iRkNum; j++ {
 
-				for i := 0; i < len(cRks[0]); i++ {
-					var s = i + 1
-					if cRks[k][i].RankingIDx == j {
-						s *= s
+				for i := 0; i < rks[j].Len(); i++ {
+					item := rks[j].GetIDByIndex(i)
+					placement, ok := idToPlacement[item]
+					var credit float64
+					if ok {
+						credit = 1 / float64(placement)
 					} else {
-						s *= rks[j].Len() + 1
+						credit = 1 / float64(rks[j].Len()+1)
 					}
-					ss := 1 / float64(s)
+					ss := float64(i+1) * credit
 					jToScoreMap[j] += ss
 					mean += ss
 				}
