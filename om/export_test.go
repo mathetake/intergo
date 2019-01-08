@@ -9,5 +9,5 @@ func (o *OptimizedMultiLeaving) ExportedPrefixConstraintSampling(num int, rks ..
 }
 
 func (o *OptimizedMultiLeaving) ExportedCalcInsensitivity(rks []intergo.Ranking, cRks [][]intergo.Res) []float64 {
-	return o.calcInsensitivity(rks, cRks)
+	return o.calcInsensitivities(rks, cRks)
 }

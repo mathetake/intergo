@@ -240,7 +240,7 @@ func TestCalcInsensitivity(t *testing.T) {
 					intergo.Res{RankingIDx: 0, ItemIDx: 1},
 				},
 			},
-			expected:  []float64{0.2222222222222222, 0.5},
+			expected:  []float64{0.086806, 0.500000},
 			threshold: 10e-7,
 		},
 		{
@@ -260,7 +260,7 @@ func TestCalcInsensitivity(t *testing.T) {
 					intergo.Res{RankingIDx: 0, ItemIDx: 2},
 				},
 			},
-			expected:  []float64{0.17833719135802462, 0.4075038580246914},
+			expected:  []float64{0.042534722, 0.4075038580},
 			threshold: 10e-8,
 		},
 		{
@@ -286,7 +286,7 @@ func TestCalcInsensitivity(t *testing.T) {
 					intergo.Res{RankingIDx: 0, ItemIDx: 0},
 				},
 			},
-			expected:  []float64{0.3072273755967089, 0.49472733605967134, 0.49472736250874494},
+			expected:  []float64{0.1354166667, 0.4062500000, 0.4062500000},
 			threshold: 10e-8,
 		},
 	}

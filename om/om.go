@@ -27,7 +27,6 @@ func init() {
 // We omit the unbiased constraint and only take `sensitivity` into account. Then we sample a ranking
 // according to calculated sensitivities defined by equation (1) in [Manabe, Tomohiro, et al., 2017]
 func (o *OptimizedMultiLeaving) GetInterleavedRanking(num int, rks ...intergo.Ranking) ([]intergo.Res, error) {
-
 	if num < 1 {
 		return nil, errors.Errorf("invalid NumSampling: %d", o.NumSampling)
 	}
@@ -44,7 +43,7 @@ func (o *OptimizedMultiLeaving) GetInterleavedRanking(num int, rks ...intergo.Ra
 	wg.Wait()
 
 	// calc Insensitivity of sampled rankings
-	ins := o.calcInsensitivity(rks, cRks)
+	ins := o.calcInsensitivities(rks, cRks)
 
 	// init +inf value
 	min := math.Inf(0)
@@ -57,41 +56,51 @@ func (o *OptimizedMultiLeaving) GetInterleavedRanking(num int, rks ...intergo.Ra
 	return cRks[maxIDx], nil
 }
 
-func (*OptimizedMultiLeaving) calcInsensitivity(rks []intergo.Ranking, cRks [][]intergo.Res) []float64 {
+func (*OptimizedMultiLeaving) CalcInsensitivity(rks []intergo.Ranking, res []intergo.Res) float64 {
+	var iRkNum = len(rks)
+	var mean float64
+
+	jToScoreMap := make([]float64, iRkNum)
+	for i := 0; i < iRkNum; i++ {
+		idToPlacement := map[interface{}]int{}
+		for j := 0; j < rks[i].Len(); j++ {
+			itemId := rks[i].GetIDByIndex(j)
+			idToPlacement[itemId] = j + 1
+		}
+		for j := 0; j < len(res); j++ {
+			var s = 1 / float64(j+1)
+			var credit float64
+			itemId := rks[res[j].RankingIDx].GetIDByIndex(res[j].ItemIDx)
+			placement, ok := idToPlacement[itemId]
+			if ok {
+				credit = 1 / float64(placement)
+			} else {
+				credit = 1 / float64(rks[i].Len()+1)
+			}
+			ss := s * credit
+			jToScoreMap[i] += ss
+			mean += ss
+		}
+	}
+
+	mean /= float64(iRkNum)
+	var score float64
+	for i := 0; i < iRkNum; i++ {
+		var s = jToScoreMap[i] - mean
+		score += s * s
+	}
+	return score
+}
+
+func (o *OptimizedMultiLeaving) calcInsensitivities(rks []intergo.Ranking, cRks [][]intergo.Res) []float64 {
 	res := make([]float64, len(cRks))
 
-	var iRkNum = len(rks)
 	var wg sync.WaitGroup
 
 	for k := 0; k < len(cRks); k++ {
 		wg.Add(1)
 		go func(k int) {
-			var mean float64
-
-			jToScoreMap := make([]float64, iRkNum)
-			for j := 0; j < iRkNum; j++ {
-
-				for i := 0; i < len(cRks[0]); i++ {
-					var s = i + 1
-					if cRks[k][i].RankingIDx == j {
-						s *= s
-					} else {
-						s *= rks[j].Len() + 1
-					}
-					ss := 1 / float64(s)
-					jToScoreMap[j] += ss
-					mean += ss
-				}
-			}
-
-			mean /= float64(iRkNum)
-
-			var score float64
-			for j := 0; j < iRkNum; j++ {
-				var s = jToScoreMap[j] - mean
-				score += s * s
-			}
-			res[k] = score
+			res[k] = o.CalcInsensitivity(rks, cRks[k])
 			wg.Done()
 		}(k)
 	}
