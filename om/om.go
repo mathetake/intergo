@@ -14,6 +14,7 @@ type OptimizedMultiLeaving struct {
 	NumSampling int
 	CreditLabel int
 	Alpha       float64
+	R           int
 }
 
 var _ intergo.Interleaving = &OptimizedMultiLeaving{}
@@ -58,7 +59,7 @@ func (o *OptimizedMultiLeaving) GetInterleavedRanking(num int, rks ...intergo.Ra
 	return cRks[maxIDx], nil
 }
 
-func getCredit(rankingIdx int, itemId interface{}, idToPlacements *[]map[interface{}]int, creditLabel int, isSameRankingIdx bool) float64 {
+func getCredit(rankingIdx int, itemId int, idToPlacements *[]map[int]int, creditLabel int, isSameRankingIdx bool) float64 {
 	switch creditLabel {
 	case 0:
 		// credit = 1 / (original rank)
@@ -89,15 +90,15 @@ func getCredit(rankingIdx int, itemId interface{}, idToPlacements *[]map[interfa
 	return 0
 }
 
-func (o *OptimizedMultiLeaving) GetIdToPlacementMap(rks []intergo.Ranking) []map[interface{}]int {
-	var iRkNum = len(rks)
-	itemIds := make(map[interface{}]struct{})
-	idToPlacements := make([]map[interface{}]int, iRkNum)
+func (o *OptimizedMultiLeaving) GetIdToPlacementMap(rks *[]intergo.Ranking) []map[int]int {
+	var iRkNum = len(*rks)
+	itemIds := make(map[int]struct{})
+	idToPlacements := make([]map[int]int, iRkNum)
 	// idToPlacements[ranking idx][item id] -> original ranking placement
 	for i := 0; i < iRkNum; i++ {
-		idToPlacements[i] = map[interface{}]int{}
-		for j := 0; j < rks[i].Len(); j++ {
-			itemId := rks[i].GetIDByIndex(j)
+		idToPlacements[i] = map[int]int{}
+		for j := 0; j < (*rks)[i].Len(); j++ {
+			itemId := (*rks)[i].GetIDByIndex(j).(int)
 			idToPlacements[i][itemId] = j + 1
 			itemIds[itemId] = struct{}{}
 		}
@@ -106,7 +107,7 @@ func (o *OptimizedMultiLeaving) GetIdToPlacementMap(rks []intergo.Ranking) []map
 		for itemId := range itemIds {
 			_, ok := idToPlacements[i][itemId]
 			if !ok {
-				idToPlacements[i][itemId] = rks[i].Len() + 1
+				idToPlacements[i][itemId] = (*rks)[i].Len() + 1
 			}
 		}
 	}
@@ -117,44 +118,55 @@ func (o *OptimizedMultiLeaving) CalcInsensitivityAndBias(rks *[]intergo.Ranking,
 	var iRkNum = len(*rks)
 	var insensitivityMean float64
 
-	idToPlacements := o.GetIdToPlacementMap(*rks)
+	idToPlacements := o.GetIdToPlacementMap(rks)
 	insensitivityMap := make([]float64, iRkNum)
 	biasMap := make([][]float64, iRkNum)
 
+	var wg sync.WaitGroup
 	for i := 0; i < iRkNum; i++ {
-		biasMap[i] = make([]float64, len(*res))
-		bias := 0.0
-		for j := 0; j < len(*res); j++ {
-			var s = 1 / float64(j+1)
-			itemId := (*rks)[(*res)[j].RankingIDx].GetIDByIndex((*res)[j].ItemIDx)
-			credit := getCredit(i, itemId, &idToPlacements, creditLabel, (*res)[j].RankingIDx == i)
-			ss := s * credit
-			insensitivityMap[i] += ss
-			insensitivityMean += ss
-			bias += credit
-			biasMap[i][j] = bias
-		}
+		wg.Add(1)
+		go func(i int) {
+			bias := 0.0
+			biasMap[i] = make([]float64, len(*res))
+			for j := 0; j < len(*res) && j < o.R; j++ {
+				var s = 1 / float64(j+1)
+				itemId := (*rks)[(*res)[j].RankingIDx].GetIDByIndex((*res)[j].ItemIDx).(int)
+				credit := getCredit(i, itemId, &idToPlacements, creditLabel, (*res)[j].RankingIDx == i)
+				ss := s * credit
+				insensitivityMap[i] += ss
+				insensitivityMean += ss
+				bias += credit
+				biasMap[i][j] = bias
+			}
+			wg.Done()
+		}(i)
 	}
+	wg.Wait()
 
 	var biasSum float64
-	for r := 0; r < len(*res); r++ {
+	for r := 0; r < len(*res) && r < o.R; r++ {
 		min := math.Inf(1)
 		max := math.Inf(-1)
-		for i := 0; i < iRkNum; i++ {
-			v := math.Abs(biasMap[i][r])
-			if min > v {
-				min = v
+		wg.Add(1)
+		go func(r int) {
+			for i := 0; i < iRkNum; i++ {
+				v := math.Abs(biasMap[i][r])
+				if min > v {
+					min = v
+				}
+				if max < v {
+					max = v
+				}
 			}
-			if max < v {
-				max = v
+			if creditLabel != 0 {
+				min += 1
+				max += 1
 			}
-		}
-		if creditLabel != 0 {
-			min += 1
-			max += 1
-		}
-		biasSum += 1.0 - math.Abs(min/max)
+			biasSum += 1.0 - math.Abs(min/max)
+			wg.Done()
+		}(r)
 	}
+	wg.Wait()
 
 	insensitivityMean /= float64(iRkNum)
 	EPS := 1e-20
