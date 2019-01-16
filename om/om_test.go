@@ -24,9 +24,8 @@ var _ intergo.Ranking = tRanking{}
 func TestGetInterleavedRanking(t *testing.T) {
 	o := &om.OptimizedMultiLeaving{
 		NumSampling: 100,
-		CreditLabel:0,
-		Alpha: 0,
-		R:100,
+		CreditLabel: 0,
+		Alpha:       0,
 	}
 
 	cases := []struct {
@@ -220,7 +219,7 @@ func TestPrefixConstraintSampling(t *testing.T) {
 }
 
 func TestCalcInsensitivity(t *testing.T) {
-	o := &om.OptimizedMultiLeaving{Alpha: 0, CreditLabel:0, R:100}
+	o := &om.OptimizedMultiLeaving{Alpha: 0, CreditLabel: 0}
 
 	cases := []struct {
 		inputRankings    []intergo.Ranking

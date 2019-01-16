@@ -14,7 +14,6 @@ type OptimizedMultiLeaving struct {
 	NumSampling int
 	CreditLabel int
 	Alpha       float64
-	R           int
 }
 
 var _ intergo.Interleaving = &OptimizedMultiLeaving{}
@@ -79,7 +78,7 @@ func getCredit(rankingIdx int, itemId int, idToPlacements *[]map[int]int, credit
 				continue
 			}
 			if !ok1 {
-				numGreater+=1
+				numGreater += 1
 				continue
 			}
 			if (*idToPlacements)[i][itemId] > (*idToPlacements)[rankingIdx][itemId] {
@@ -126,7 +125,7 @@ func (o *OptimizedMultiLeaving) CalcInsensitivityAndBias(rks *[]intergo.Ranking,
 	for i := 0; i < iRkNum; i++ {
 		biasMap[i] = make([]float64, len(*res))
 		bias := 0.0
-		for j := 0; j < len(*res) && j < o.R; j++ {
+		for j := 0; j < len(*res); j++ {
 			var s = 1 / float64(j+1)
 			itemId := (*rks)[(*res)[j].RankingIDx].GetIDByIndex((*res)[j].ItemIDx).(int)
 			credit := getCredit(i, itemId, &idToPlacements, creditLabel, (*res)[j].RankingIDx == i)
@@ -139,7 +138,7 @@ func (o *OptimizedMultiLeaving) CalcInsensitivityAndBias(rks *[]intergo.Ranking,
 	}
 
 	var biasSum float64
-	for r := 0; r < len(*res) && r < o.R; r++ {
+	for r := 0; r < len(*res); r++ {
 		min := math.Inf(1)
 		max := math.Inf(-1)
 		for i := 0; i < iRkNum; i++ {
