@@ -166,7 +166,8 @@ func (o *OptimizedMultiLeaving) CalcInsensitivityAndBias(rks []intergo.Ranking, 
 		var in = insensitivityMap[i] - insensitivityMean
 		insensitivitySum += in * in
 	}
-	return (insensitivitySum + alpha*biasSum) / (insensitivityMean * insensitivityMean), biasSum / float64(len(res))
+	bias := biasSum / float64(len(res))
+	return (insensitivitySum + alpha*bias) / (insensitivityMean * insensitivityMean), biasSum / float64(len(res))
 }
 
 func (o *OptimizedMultiLeaving) calcInsensitivities(rks []intergo.Ranking, cRks [][]intergo.Res) []float64 {
