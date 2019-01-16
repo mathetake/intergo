@@ -217,7 +217,7 @@ func TestPrefixConstraintSampling(t *testing.T) {
 }
 
 func TestCalcInsensitivity(t *testing.T) {
-	o := &om.OptimizedMultiLeaving{}
+	o := &om.OptimizedMultiLeaving{Alpha: 0}
 
 	cases := []struct {
 		inputRankings    []intergo.Ranking
@@ -240,7 +240,7 @@ func TestCalcInsensitivity(t *testing.T) {
 					intergo.Res{RankingIDx: 0, ItemIDx: 1},
 				},
 			},
-			expected:  []float64{0.086806, 0.500000},
+			expected:  []float64{0.1133786848, 0.8888888889},
 			threshold: 10e-7,
 		},
 		{
@@ -260,7 +260,7 @@ func TestCalcInsensitivity(t *testing.T) {
 					intergo.Res{RankingIDx: 0, ItemIDx: 2},
 				},
 			},
-			expected:  []float64{0.042534722, 0.4075038580},
+			expected:  []float64{0.0376778162, 0.4923955480},
 			threshold: 10e-8,
 		},
 		{
@@ -286,7 +286,7 @@ func TestCalcInsensitivity(t *testing.T) {
 					intergo.Res{RankingIDx: 0, ItemIDx: 0},
 				},
 			},
-			expected:  []float64{0.1354166667, 0.4062500000, 0.4062500000},
+			expected:  []float64{0.1611570248, 0.5850000000, 0.5850000000},
 			threshold: 10e-8,
 		},
 	}
@@ -302,7 +302,7 @@ func TestCalcInsensitivity(t *testing.T) {
 					diff = -diff
 				}
 				if true != (diff < tcc.threshold) {
-					t.Logf("unexpected difference at %d-th element: actual:%f != expected:%f", i, actual[i], tcc.expected[i])
+					t.Logf("unexpected difference at %d-th element: actual:%.10f != expected:%.10f", i, actual[i], tcc.expected[i])
 				}
 				assert.Equal(t, true, diff < tcc.threshold)
 			}
