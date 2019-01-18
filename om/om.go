@@ -70,22 +70,19 @@ func getCredit(rankingIdx int, itemId interface{}, idToPlacements []map[interfac
 		}
 	case 1:
 		// credit = -(relative rank - 1)
-		numGreater := 0.0
+		if _, ok := idToPlacements[rankingIdx][itemId]; !ok {
+			return float64(len(idToPlacements) - 1)
+		}
+		numLess := 0.0
 		for i := 0; i < len(idToPlacements); i++ {
-			_, ok1 := idToPlacements[i][itemId]
-			_, ok2 := idToPlacements[rankingIdx][itemId]
-			if !ok2 {
+			if _, ok := idToPlacements[i][itemId]; !ok {
 				continue
 			}
-			if !ok1 {
-				numGreater += 1
-				continue
-			}
-			if idToPlacements[i][itemId] > idToPlacements[rankingIdx][itemId] {
-				numGreater += 1
+			if idToPlacements[i][itemId] < idToPlacements[rankingIdx][itemId] {
+				numLess += 1
 			}
 		}
-		return -numGreater
+		return -numLess
 	default:
 		// credit = 1 if output ranking idx equals input ranking idx
 		// else credit = 0
