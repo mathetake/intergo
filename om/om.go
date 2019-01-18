@@ -73,7 +73,7 @@ func (o *OptimizedMultiLeaving) GetCredit(rankingIdx int, itemId interface{}, id
 		if _, ok := idToPlacements[rankingIdx][itemId]; !ok {
 			return -float64(len(idToPlacements))
 		}
-		numLess := 0.0
+		var numLess float64
 		for i := 0; i < len(idToPlacements); i++ {
 			if _, ok := idToPlacements[i][itemId]; !ok {
 				continue
