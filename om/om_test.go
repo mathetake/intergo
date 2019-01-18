@@ -83,6 +83,102 @@ func TestGetInterleavedRanking(t *testing.T) {
 	}
 }
 
+func TestGetCredit(t *testing.T) {
+
+	cases := []struct {
+		rankingIdx       int
+		itemId           interface{}
+		idToPlacements   []map[interface{}]int
+		creditLabel      int
+		isSameRankingIdx bool
+		expected         float64
+	}{
+		{
+			rankingIdx: 1,
+			itemId:     "item1",
+			idToPlacements: []map[interface{}]int{
+				{"item1": 1, "item2": 2, "item3": 3},
+				{"item1": 3, "item2": 1, "item3": 2},
+				{"item1": 2, "item2": 1, "item3": 3},
+			},
+			creditLabel:      0,
+			isSameRankingIdx: false,
+			expected:         0.3333333333333333,
+		},
+		{
+			rankingIdx: 1,
+			itemId:     "item1",
+			idToPlacements: []map[interface{}]int{
+				{"item1": 1, "item2": 2, "item3": 3},
+				{"item1": 3, "item2": 1, "item3": 2},
+				{"item1": 2, "item2": 1, "item3": 3},
+			},
+			creditLabel:      1,
+			isSameRankingIdx: false,
+			expected:         -2.0,
+		},
+		{
+			rankingIdx: 0,
+			itemId:     "item2",
+			idToPlacements: []map[interface{}]int{
+				{"item1": 1, "item3": 3},
+				{"item1": 3, "item2": 1, "item3": 2},
+				{"item1": 2, "item2": 1, "item3": 3},
+			},
+			creditLabel:      1,
+			isSameRankingIdx: false,
+			expected:         -3.0,
+		},
+		{
+			rankingIdx: 1,
+			itemId:     "item2",
+			idToPlacements: []map[interface{}]int{
+				{"item1": 1, "item3": 3},
+				{"item1": 3, "item2": 1, "item3": 2},
+				{"item1": 2, "item2": 1, "item3": 3},
+			},
+			creditLabel:      1,
+			isSameRankingIdx: false,
+			expected:         0.0,
+		},
+		{
+			rankingIdx: 0,
+			itemId:     "item2",
+			idToPlacements: []map[interface{}]int{
+				{"item1": 1, "item2": 2, "item3": 3},
+				{"item1": 3, "item2": 1, "item3": 2},
+				{"item1": 2, "item2": 1, "item3": 3},
+			},
+			creditLabel:      3,
+			isSameRankingIdx: false,
+			expected:         0,
+		},
+		{
+			rankingIdx: 0,
+			itemId:     "item2",
+			idToPlacements: []map[interface{}]int{
+				{"item1": 1, "item2": 2, "item3": 3},
+				{"item1": 3, "item2": 1, "item3": 2},
+				{"item1": 2, "item2": 1, "item3": 3},
+			},
+			creditLabel:      3,
+			isSameRankingIdx: true,
+			expected:         1,
+		},
+	}
+
+	for n, tc := range cases {
+		tcc := tc
+		o := &om.OptimizedMultiLeaving{
+			CreditLabel: tc.creditLabel,
+		}
+		t.Run(fmt.Sprintf("%d-th unit test", n), func(t *testing.T) {
+			actual := o.GetCredit(tcc.rankingIdx, tcc.itemId, tcc.idToPlacements, tcc.creditLabel, tcc.isSameRankingIdx)
+			assert.Equal(t, tcc.expected, actual)
+		})
+	}
+}
+
 func TestPrefixConstraintSampling(t *testing.T) {
 	o := &om.OptimizedMultiLeaving{}
 
