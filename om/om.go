@@ -16,6 +16,8 @@ type OptimizedMultiLeaving struct {
 	Alpha       float64
 }
 
+const els = 1e-20
+
 var _ intergo.Interleaving = &OptimizedMultiLeaving{}
 
 func init() {
@@ -156,7 +158,6 @@ func (o *OptimizedMultiLeaving) CalcInsensitivityAndBias(rks []intergo.Ranking, 
 	var fResLen = float64(len(res))
 
 	insensitivityMean /= float64(iRkNum)
-	var els = 1e-20
 	if math.Abs(insensitivityMean) < els {
 		return math.Inf(1), biasSum / fResLen
 	}
