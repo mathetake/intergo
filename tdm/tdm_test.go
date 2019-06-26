@@ -27,7 +27,7 @@ func TestTeamDraftMultileaving(t *testing.T) {
 	cases := []struct {
 		inputRks         []intergo.Ranking
 		num              int
-		expectedPatterns [][]intergo.Res
+		expectedPatterns [][]intergo.Result
 	}{
 		{
 			inputRks: []intergo.Ranking{
@@ -35,14 +35,14 @@ func TestTeamDraftMultileaving(t *testing.T) {
 				tRanking{10, 20, 30, 40, 50},
 			},
 			num: 2,
-			expectedPatterns: [][]intergo.Res{
+			expectedPatterns: [][]intergo.Result{
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
 				},
 			},
 		},
@@ -52,14 +52,14 @@ func TestTeamDraftMultileaving(t *testing.T) {
 				tRanking{1, 20, 30, 40, 50},
 			},
 			num: 2,
-			expectedPatterns: [][]intergo.Res{
+			expectedPatterns: [][]intergo.Result{
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
 				},
 			},
 		},
@@ -69,26 +69,26 @@ func TestTeamDraftMultileaving(t *testing.T) {
 				tRanking{1, 20, 30, 40, 50},
 			},
 			num: 3,
-			expectedPatterns: [][]intergo.Res{
+			expectedPatterns: [][]intergo.Result{
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 1},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
+					intergo.Result{RankingIndex: 1, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
-					intergo.Res{RankingIDx: 0, ItemIDx: 2},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
+					intergo.Result{RankingIndex: 0, ItemIndex: 2},
 				},
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
-					intergo.Res{RankingIDx: 1, ItemIDx: 2},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 1},
+					intergo.Result{RankingIndex: 1, ItemIndex: 2},
 				},
 			},
 		},
@@ -179,7 +179,7 @@ func TestTeamDraftMultileaving_RankingRatio(t *testing.T) {
 
 			counts := map[int]int{}
 			for _, it := range res {
-				counts[it.RankingIDx]++
+				counts[it.RankingIndex]++
 			}
 			fmt.Println(counts)
 

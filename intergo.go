@@ -8,14 +8,14 @@ type Ranking interface {
 	Len() int
 }
 
-type Res struct {
+type Result struct {
 	// Ranking ... represents to which ranking the item belongs
-	RankingIDx int
+	RankingIndex int
 
-	// ItemIDx ... represents the item's index in the ranking declared by RankingIDx
-	ItemIDx int
+	// ItemIndex ... represents the item's index in the ranking declared by RankingIndex
+	ItemIndex int
 }
 
 type Interleaving interface {
-	GetInterleavedRanking(int, ...Ranking) ([]Res, error)
+	GetInterleavedRanking(int, ...Ranking) ([]Result, error)
 }

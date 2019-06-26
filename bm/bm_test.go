@@ -27,7 +27,7 @@ func TestBalancedMultileaving(t *testing.T) {
 	cases := []struct {
 		inputRks         []intergo.Ranking
 		num              int
-		expectedPatterns [][]intergo.Res
+		expectedPatterns [][]intergo.Result
 	}{
 		{
 			inputRks: []intergo.Ranking{
@@ -35,22 +35,22 @@ func TestBalancedMultileaving(t *testing.T) {
 				tRanking{10, 20, 30, 40, 50},
 			},
 			num: 2,
-			expectedPatterns: [][]intergo.Res{
+			expectedPatterns: [][]intergo.Result{
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
 				},
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 1},
 				},
 			},
 		},
@@ -60,22 +60,22 @@ func TestBalancedMultileaving(t *testing.T) {
 				tRanking{1, 20, 30, 40, 50},
 			},
 			num: 2,
-			expectedPatterns: [][]intergo.Res{
+			expectedPatterns: [][]intergo.Result{
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 1},
 				},
 			},
 		},
@@ -85,22 +85,22 @@ func TestBalancedMultileaving(t *testing.T) {
 				tRanking{1, 1, 30, 40, 50},
 			},
 			num: 2,
-			expectedPatterns: [][]intergo.Res{
+			expectedPatterns: [][]intergo.Result{
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 2},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 2},
 				},
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 2},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 2},
 				},
 			},
 		},

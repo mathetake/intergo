@@ -63,7 +63,7 @@ func main() {
 	res, _ := TDM.GetInterleavedRanking(4, rankingA, rankingB)
 	iRanking := tRanking{}
 	for _, it := range res {
-		iRanking = append(iRanking, idxToRk[it.RankingIDx][it.ItemIDx])
+		iRanking = append(iRanking, idxToRk[it.RankingIndex][it.ItemIndex])
 	}
 
 	fmt.Println("Result: ", iRanking)

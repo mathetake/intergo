@@ -31,16 +31,16 @@ func TestGetInterleavedRanking(t *testing.T) {
 	cases := []struct {
 		num           int
 		inputRankings []intergo.Ranking
-		expected      []intergo.Res
+		expected      []intergo.Result
 	}{
 		{
 			inputRankings: []intergo.Ranking{
 				tRanking{1, 2, 3, 4, 5},
 				tRanking{10, 20, 30, 40, 50},
 			},
-			expected: []intergo.Res{
-				{RankingIDx: 0, ItemIDx: 0},
-				{RankingIDx: 1, ItemIDx: 0},
+			expected: []intergo.Result{
+				{RankingIndex: 0, ItemIndex: 0},
+				{RankingIndex: 1, ItemIndex: 0},
 			},
 			num: 2,
 		},
@@ -49,10 +49,10 @@ func TestGetInterleavedRanking(t *testing.T) {
 				tRanking{1, 2, 3},
 				tRanking{10, 20, 30},
 			},
-			expected: []intergo.Res{
-				{RankingIDx: 0, ItemIDx: 0},
-				{RankingIDx: 1, ItemIDx: 0},
-				{RankingIDx: 1, ItemIDx: 1},
+			expected: []intergo.Result{
+				{RankingIndex: 0, ItemIndex: 0},
+				{RankingIndex: 1, ItemIndex: 0},
+				{RankingIndex: 1, ItemIndex: 1},
 			},
 			num: 10,
 		},
@@ -62,10 +62,10 @@ func TestGetInterleavedRanking(t *testing.T) {
 				tRanking{10, 20, 30},
 				tRanking{100, 200, 300},
 			},
-			expected: []intergo.Res{
-				{RankingIDx: 0, ItemIDx: 0},
-				{RankingIDx: 1, ItemIDx: 0},
-				{RankingIDx: 2, ItemIDx: 0},
+			expected: []intergo.Result{
+				{RankingIndex: 0, ItemIndex: 0},
+				{RankingIndex: 1, ItemIndex: 0},
+				{RankingIndex: 2, ItemIndex: 0},
 			},
 			num: 2,
 		},
@@ -86,15 +86,15 @@ func TestGetInterleavedRanking(t *testing.T) {
 func TestGetCredit(t *testing.T) {
 
 	cases := []struct {
-		rankingIdx       int
+		RankingIndex       int
 		itemId           interface{}
 		idToPlacements   []map[interface{}]int
 		creditLabel      int
-		isSameRankingIdx bool
+		isSameRankingIndex bool
 		expected         float64
 	}{
 		{
-			rankingIdx: 1,
+			RankingIndex: 1,
 			itemId:     "item1",
 			idToPlacements: []map[interface{}]int{
 				{"item1": 1, "item2": 2, "item3": 3},
@@ -102,11 +102,11 @@ func TestGetCredit(t *testing.T) {
 				{"item1": 2, "item2": 1, "item3": 3},
 			},
 			creditLabel:      0,
-			isSameRankingIdx: false,
+			isSameRankingIndex: false,
 			expected:         0.3333333333333333,
 		},
 		{
-			rankingIdx: 1,
+			RankingIndex: 1,
 			itemId:     "item1",
 			idToPlacements: []map[interface{}]int{
 				{"item1": 1, "item2": 2, "item3": 3},
@@ -114,11 +114,11 @@ func TestGetCredit(t *testing.T) {
 				{"item1": 2, "item2": 1, "item3": 3},
 			},
 			creditLabel:      1,
-			isSameRankingIdx: false,
+			isSameRankingIndex: false,
 			expected:         -2.0,
 		},
 		{
-			rankingIdx: 0,
+			RankingIndex: 0,
 			itemId:     "item2",
 			idToPlacements: []map[interface{}]int{
 				{"item1": 1, "item3": 3},
@@ -126,11 +126,11 @@ func TestGetCredit(t *testing.T) {
 				{"item1": 2, "item2": 1, "item3": 3},
 			},
 			creditLabel:      1,
-			isSameRankingIdx: false,
+			isSameRankingIndex: false,
 			expected:         -3.0,
 		},
 		{
-			rankingIdx: 1,
+			RankingIndex: 1,
 			itemId:     "item2",
 			idToPlacements: []map[interface{}]int{
 				{"item1": 1, "item3": 3},
@@ -138,11 +138,11 @@ func TestGetCredit(t *testing.T) {
 				{"item1": 2, "item2": 1, "item3": 3},
 			},
 			creditLabel:      1,
-			isSameRankingIdx: false,
+			isSameRankingIndex: false,
 			expected:         0.0,
 		},
 		{
-			rankingIdx: 0,
+			RankingIndex: 0,
 			itemId:     "item2",
 			idToPlacements: []map[interface{}]int{
 				{"item1": 1, "item2": 2, "item3": 3},
@@ -150,11 +150,11 @@ func TestGetCredit(t *testing.T) {
 				{"item1": 2, "item2": 1, "item3": 3},
 			},
 			creditLabel:      3,
-			isSameRankingIdx: false,
+			isSameRankingIndex: false,
 			expected:         0,
 		},
 		{
-			rankingIdx: 0,
+			RankingIndex: 0,
 			itemId:     "item2",
 			idToPlacements: []map[interface{}]int{
 				{"item1": 1, "item2": 2, "item3": 3},
@@ -162,7 +162,7 @@ func TestGetCredit(t *testing.T) {
 				{"item1": 2, "item2": 1, "item3": 3},
 			},
 			creditLabel:      3,
-			isSameRankingIdx: true,
+			isSameRankingIndex: true,
 			expected:         1,
 		},
 	}
@@ -173,7 +173,7 @@ func TestGetCredit(t *testing.T) {
 			CreditLabel: tc.creditLabel,
 		}
 		t.Run(fmt.Sprintf("%d-th unit test", n), func(t *testing.T) {
-			actual := o.GetCredit(tcc.rankingIdx, tcc.itemId, tcc.idToPlacements, tcc.creditLabel, tcc.isSameRankingIdx)
+			actual := o.GetCredit(tcc.RankingIndex, tcc.itemId, tcc.idToPlacements, tcc.creditLabel, tcc.isSameRankingIndex)
 			assert.Equal(t, tcc.expected, actual)
 		})
 	}
@@ -185,7 +185,7 @@ func TestPrefixConstraintSampling(t *testing.T) {
 	cases := []struct {
 		inputRks         []intergo.Ranking
 		num              int
-		expectedPatterns [][]intergo.Res
+		expectedPatterns [][]intergo.Result
 	}{
 		{
 			inputRks: []intergo.Ranking{
@@ -193,22 +193,22 @@ func TestPrefixConstraintSampling(t *testing.T) {
 				tRanking{10, 20, 30, 40, 50},
 			},
 			num: 2,
-			expectedPatterns: [][]intergo.Res{
+			expectedPatterns: [][]intergo.Result{
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
 				},
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 1},
 				},
 			},
 		},
@@ -218,22 +218,22 @@ func TestPrefixConstraintSampling(t *testing.T) {
 				tRanking{1, 20, 30, 40, 50},
 			},
 			num: 2,
-			expectedPatterns: [][]intergo.Res{
+			expectedPatterns: [][]intergo.Result{
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 1},
 				},
 			},
 		},
@@ -243,46 +243,46 @@ func TestPrefixConstraintSampling(t *testing.T) {
 				tRanking{1, 20, 30, 40, 50},
 			},
 			num: 3,
-			expectedPatterns: [][]intergo.Res{
+			expectedPatterns: [][]intergo.Result{
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIDx: 1, ItemIndex: 1},
+					intergo.Result{RankingIDx: 0, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
+					intergo.Result{RankingIDx: 0, ItemIndex: 0},
+					intergo.Result{RankingIDx: 0, ItemIndex: 1},
+					intergo.Result{RankingIDx: 1, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
-					intergo.Res{RankingIDx: 0, ItemIDx: 2},
+					intergo.Result{RankingIDx: 0, ItemIndex: 0},
+					intergo.Result{RankingIDx: 0, ItemIndex: 1},
+					intergo.Result{RankingIDx: 0, ItemIndex: 2},
 				},
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
-					intergo.Res{RankingIDx: 1, ItemIDx: 2},
+					intergo.Result{RankingIDx: 0, ItemIndex: 0},
+					intergo.Res{RankingIDx: 1, ItemIndex: 1},
+					intergo.Res{RankingIDx: 1, ItemIndex: 2},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Res{RankingIDx: 1, ItemIndex: 0},
+					intergo.Res{RankingIDx: 1, ItemIndex: 1},
+					intergo.Res{RankingIDx: 0, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
-					intergo.Res{RankingIDx: 1, ItemIDx: 2},
+					intergo.Res{RankingIDx: 1, ItemIndex: 0},
+					intergo.Res{RankingIDx: 1, ItemIndex: 1},
+					intergo.Res{RankingIDx: 1, ItemIndex: 2},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
+					intergo.Res{RankingIDx: 1, ItemIndex: 0},
+					intergo.Res{RankingIDx: 0, ItemIndex: 1},
+					intergo.Res{RankingIDx: 1, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
-					intergo.Res{RankingIDx: 0, ItemIDx: 2},
+					intergo.Res{RankingIDx: 1, ItemIndex: 0},
+					intergo.Res{RankingIDx: 0, ItemIndex: 1},
+					intergo.Res{RankingIDx: 0, ItemIndex: 2},
 				},
 			},
 		},
@@ -330,11 +330,11 @@ func TestCalcInsensitivity(t *testing.T) {
 			},
 			combinedRankings: [][]intergo.Res{
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
+					intergo.Res{RankingIDx: 0, ItemIndex: 0},
+					intergo.Res{RankingIDx: 1, ItemIndex: 0},
 				},
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
+					intergo.Res{RankingIDx: 0, ItemIndex: 0},
 					intergo.Res{RankingIDx: 0, ItemIDx: 1},
 				},
 			},
