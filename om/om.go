@@ -35,11 +35,11 @@ func (o *OptimizedMultiLeaving) GetInterleavedRanking(num int, rks ...intergo.Ra
 
 	var wg sync.WaitGroup
 	cRks := make([][]intergo.Result, o.NumSampling)
+	wg.Add(o.NumSampling)
 	for i := 0; i < o.NumSampling; i++ {
-		wg.Add(1)
 		go func(i int) {
+			defer wg.Done()
 			cRks[i] = o.prefixConstraintSampling(num, rks...)
-			wg.Done()
 		}(i)
 	}
 	wg.Wait()
@@ -88,11 +88,9 @@ func (o *OptimizedMultiLeaving) GetCredit(RankingIndex int, itemId interface{}, 
 		// else credit = 0
 		if isSameRankingIndex {
 			return 1
-		} else {
-			return 0
 		}
+		return 0
 	}
-	return 0
 }
 
 func (o *OptimizedMultiLeaving) GetIdToPlacementMap(rks []intergo.Ranking) []map[interface{}]int {
@@ -102,8 +100,8 @@ func (o *OptimizedMultiLeaving) GetIdToPlacementMap(rks []intergo.Ranking) []map
 	// idToPlacements[ranking idx][item id] -> original ranking placement
 	for i := 0; i < iRkNum; i++ {
 		idToPlacements[i] = map[interface{}]int{}
-		for j := 0; j < (rks)[i].Len(); j++ {
-			itemId := (rks)[i].GetIDByIndex(j)
+		for j := 0; j < rks[i].Len(); j++ {
+			itemId := rks[i].GetIDByIndex(j)
 			idToPlacements[i][itemId] = j + 1
 			itemIds[itemId] = true
 		}
@@ -121,7 +119,7 @@ func (o *OptimizedMultiLeaving) CalcInsensitivityAndBias(rks []intergo.Ranking, 
 
 	for i := 0; i < iRkNum; i++ {
 		biasMap[i] = make([]float64, len(res))
-		bias := 0.0
+		var bias float64
 		for j := 0; j < len(res); j++ {
 			var s = 1 / float64(j+1)
 			itemId := rks[res[j].RankingIndex].GetIDByIndex(res[j].ItemIndex)
@@ -154,30 +152,31 @@ func (o *OptimizedMultiLeaving) CalcInsensitivityAndBias(rks []intergo.Ranking, 
 		biasSum += 1.0 - math.Abs(min/max)
 	}
 
+	var fResLen = float64(len(res))
+
 	insensitivityMean /= float64(iRkNum)
-	EPS := 1e-20
-	if math.Abs(insensitivityMean) < EPS {
-		return math.Inf(1), biasSum / float64(len(res))
+	var els = 1e-20
+	if math.Abs(insensitivityMean) < els {
+		return math.Inf(1), biasSum / fResLen
 	}
 	var insensitivitySum float64
 	for i := 0; i < iRkNum; i++ {
 		var in = insensitivityMap[i] - insensitivityMean
 		insensitivitySum += in * in
 	}
-	bias := biasSum / float64(len(res))
-	return (insensitivitySum + alpha*bias) / (insensitivityMean * insensitivityMean), biasSum / float64(len(res))
+	bias := biasSum / fResLen
+	return (insensitivitySum + alpha*bias) / (insensitivityMean * insensitivityMean), biasSum / fResLen
 }
 
 func (o *OptimizedMultiLeaving) calcInsensitivities(rks []intergo.Ranking, cRks [][]intergo.Result) []float64 {
 	res := make([]float64, len(cRks))
 
 	var wg sync.WaitGroup
-
+	wg.Add(len(cRks))
 	for k := 0; k < len(cRks); k++ {
-		wg.Add(1)
 		go func(k int) {
+			defer wg.Done()
 			res[k], _ = o.CalcInsensitivityAndBias(rks, cRks[k], o.CreditLabel, o.Alpha)
-			wg.Done()
 		}(k)
 	}
 	wg.Wait()
@@ -189,10 +188,10 @@ func (*OptimizedMultiLeaving) prefixConstraintSampling(num int, rks ...intergo.R
 	res := make([]intergo.Result, 0, num)
 
 	// sIDs stores item's ID in order to prevent duplication in the generated list.
-	sIDs := map[interface{}]interface{}{}
+	sIDs := make(map[interface{}]struct{}, num)
 
 	// The fact that the index stored in usedUpRks means it is already used up.
-	usedUpRks := map[int]bool{}
+	usedUpRks := make(map[int]struct{}, numR)
 
 	for len(res) < num && len(usedUpRks) != numR {
 
@@ -210,13 +209,13 @@ func (*OptimizedMultiLeaving) prefixConstraintSampling(num int, rks ...intergo.R
 					RankingIndex: selectedRkIdx,
 					ItemIndex:    j,
 				})
-				sIDs[rk.GetIDByIndex(j)] = true
+				sIDs[rk.GetIDByIndex(j)] = struct{}{}
 				break
 			}
 		}
 
 		if len(res) == bef {
-			usedUpRks[selectedRkIdx] = true
+			usedUpRks[selectedRkIdx] = struct{}{}
 		}
 	}
 	return res

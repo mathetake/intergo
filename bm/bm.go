@@ -18,7 +18,7 @@ func (*BalancedMultileaving) GetInterleavedRanking(num int, rks ...intergo.Ranki
 	sIDs := make(map[interface{}]struct{}, num)
 
 	// The fact that the index stored in usedUpRks means it is already used up.
-	usedUpRks := make(map[int]struct{}, len(rks))
+	usedUpRks := make(map[int]struct{}, numR)
 
 	counter := make(map[int]int, len(rks))
 
