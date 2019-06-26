@@ -40,7 +40,7 @@ import (
 
 type tRanking []int
 
-func (rk tRanking) GetIDByIndex(i int) interface{} {
+func (rk tRanking) GetIDByIndex(i int) intergo.ID {
 	return rk[i]
 }
 
@@ -51,7 +51,7 @@ func (rk tRanking) Len() int {
 var _ intergo.Ranking = tRanking{}
 
 func main() {
-	TDM := &tdm.TeamDraftMultileaving{}
+	t := &tdm.TeamDraftMultileaving{}
 	rankingA := tRanking{1, 2, 3, 4, 5,}
 	rankingB := tRanking{10, 20, 30, 40, 50}
 
@@ -60,7 +60,7 @@ func main() {
 		1: rankingB,
 	}
 
-	res, _ := TDM.GetInterleavedRanking(4, rankingA, rankingB)
+	res, _ := t.GetInterleavedRanking(4, rankingA, rankingB)
 	iRanking := tRanking{}
 	for _, it := range res {
 		iRanking = append(iRanking, idxToRk[it.RankingIndex][it.ItemIndex])

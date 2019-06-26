@@ -58,7 +58,7 @@ func (o *OptimizedMultiLeaving) GetInterleavedRanking(num int, rks ...intergo.Ra
 	return cRks[maxIDx], nil
 }
 
-func (o *OptimizedMultiLeaving) GetCredit(RankingIndex int, itemId interface{}, idToPlacements []map[interface{}]int, creditLabel int, isSameRankingIndex bool) float64 {
+func (o *OptimizedMultiLeaving) GetCredit(RankingIndex int, itemId intergo.ID, idToPlacements []map[intergo.ID]int, creditLabel int, isSameRankingIndex bool) float64 {
 	switch creditLabel {
 	case 0:
 		// credit = 1 / (original rank)
@@ -93,18 +93,19 @@ func (o *OptimizedMultiLeaving) GetCredit(RankingIndex int, itemId interface{}, 
 	}
 }
 
-func (o *OptimizedMultiLeaving) GetIdToPlacementMap(rks []intergo.Ranking) []map[interface{}]int {
+func (o *OptimizedMultiLeaving) GetIdToPlacementMap(rks []intergo.Ranking) []map[intergo.ID]int {
 	var iRkNum = len(rks)
-	itemIds := make(map[interface{}]bool)
-	idToPlacements := make([]map[interface{}]int, iRkNum)
+	itemIds := make(map[intergo.ID]bool)
+	idToPlacements := make([]map[intergo.ID]int, iRkNum)
 	// idToPlacements[ranking idx][item id] -> original ranking placement
 	for i := 0; i < iRkNum; i++ {
-		idToPlacements[i] = map[interface{}]int{}
+		m := make(map[intergo.ID]int, rks[i].Len())
 		for j := 0; j < rks[i].Len(); j++ {
 			itemId := rks[i].GetIDByIndex(j)
-			idToPlacements[i][itemId] = j + 1
+			m[itemId] = j + 1
 			itemIds[itemId] = true
 		}
+		idToPlacements[i] = m
 	}
 	return idToPlacements
 }
@@ -188,7 +189,7 @@ func (*OptimizedMultiLeaving) prefixConstraintSampling(num int, rks ...intergo.R
 	res := make([]intergo.Result, 0, num)
 
 	// sIDs stores item's ID in order to prevent duplication in the generated list.
-	sIDs := make(map[interface{}]struct{}, num)
+	sIDs := make(map[intergo.ID]struct{}, num)
 
 	// The fact that the index stored in usedUpRks means it is already used up.
 	usedUpRks := make(map[int]struct{}, numR)

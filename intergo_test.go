@@ -13,7 +13,7 @@ import (
 
 type tRanking []int
 
-func (rk tRanking) GetIDByIndex(i int) interface{} {
+func (rk tRanking) GetIDByIndex(i int) intergo.ID {
 	return rk[i]
 }
 

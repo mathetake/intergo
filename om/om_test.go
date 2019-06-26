@@ -11,7 +11,7 @@ import (
 
 type tRanking []int
 
-func (rk tRanking) GetIDByIndex(i int) interface{} {
+func (rk tRanking) GetIDByIndex(i int) intergo.ID {
 	return rk[i]
 }
 
@@ -87,83 +87,83 @@ func TestGetCredit(t *testing.T) {
 
 	cases := []struct {
 		RankingIndex       int
-		itemId           interface{}
-		idToPlacements   []map[interface{}]int
-		creditLabel      int
+		itemId             interface{}
+		idToPlacements     []map[interface{}]int
+		creditLabel        int
 		isSameRankingIndex bool
-		expected         float64
+		expected           float64
 	}{
 		{
 			RankingIndex: 1,
-			itemId:     "item1",
+			itemId:       "item1",
 			idToPlacements: []map[interface{}]int{
 				{"item1": 1, "item2": 2, "item3": 3},
 				{"item1": 3, "item2": 1, "item3": 2},
 				{"item1": 2, "item2": 1, "item3": 3},
 			},
-			creditLabel:      0,
+			creditLabel:        0,
 			isSameRankingIndex: false,
-			expected:         0.3333333333333333,
+			expected:           0.3333333333333333,
 		},
 		{
 			RankingIndex: 1,
-			itemId:     "item1",
+			itemId:       "item1",
 			idToPlacements: []map[interface{}]int{
 				{"item1": 1, "item2": 2, "item3": 3},
 				{"item1": 3, "item2": 1, "item3": 2},
 				{"item1": 2, "item2": 1, "item3": 3},
 			},
-			creditLabel:      1,
+			creditLabel:        1,
 			isSameRankingIndex: false,
-			expected:         -2.0,
+			expected:           -2.0,
 		},
 		{
 			RankingIndex: 0,
-			itemId:     "item2",
+			itemId:       "item2",
 			idToPlacements: []map[interface{}]int{
 				{"item1": 1, "item3": 3},
 				{"item1": 3, "item2": 1, "item3": 2},
 				{"item1": 2, "item2": 1, "item3": 3},
 			},
-			creditLabel:      1,
+			creditLabel:        1,
 			isSameRankingIndex: false,
-			expected:         -3.0,
+			expected:           -3.0,
 		},
 		{
 			RankingIndex: 1,
-			itemId:     "item2",
+			itemId:       "item2",
 			idToPlacements: []map[interface{}]int{
 				{"item1": 1, "item3": 3},
 				{"item1": 3, "item2": 1, "item3": 2},
 				{"item1": 2, "item2": 1, "item3": 3},
 			},
-			creditLabel:      1,
+			creditLabel:        1,
 			isSameRankingIndex: false,
-			expected:         0.0,
+			expected:           0.0,
 		},
 		{
 			RankingIndex: 0,
-			itemId:     "item2",
+			itemId:       "item2",
 			idToPlacements: []map[interface{}]int{
 				{"item1": 1, "item2": 2, "item3": 3},
 				{"item1": 3, "item2": 1, "item3": 2},
 				{"item1": 2, "item2": 1, "item3": 3},
 			},
-			creditLabel:      3,
+			creditLabel:        3,
 			isSameRankingIndex: false,
-			expected:         0,
+			expected:           0,
 		},
 		{
 			RankingIndex: 0,
-			itemId:     "item2",
+			itemId:       "item2",
 			idToPlacements: []map[interface{}]int{
 				{"item1": 1, "item2": 2, "item3": 3},
 				{"item1": 3, "item2": 1, "item3": 2},
 				{"item1": 2, "item2": 1, "item3": 3},
 			},
-			creditLabel:      3,
+			creditLabel:        3,
 			isSameRankingIndex: true,
-			expected:         1,
+			expected:           1,
 		},
 	}
 

@@ -15,7 +15,7 @@ func (*BalancedMultileaving) GetInterleavedRanking(num int, rks ...intergo.Ranki
 	res := make([]intergo.Result, 0, num)
 
 	// sIDs stores item's ID in order to prevent duplication in the generated list.
-	sIDs := make(map[interface{}]struct{}, num)
+	sIDs := make(map[intergo.ID]struct{}, num)
 
 	// The fact that the index stored in usedUpRks means it is already used up.
 	usedUpRks := make(map[int]struct{}, numR)

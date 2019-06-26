@@ -15,7 +15,7 @@ func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.
 	res := make([]intergo.Result, 0, num)
 
 	// sIDs stores item's ID in order to prevent duplication in the generated list.
-	sIDs := make(map[interface{}]struct{}, num)
+	sIDs := make(map[intergo.ID]struct{}, num)
 
 	// minRks have rankings' index whose number of selected items is minimum
 	minRks := make([]int, 0, numR)
