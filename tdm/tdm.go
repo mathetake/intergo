@@ -10,57 +10,63 @@ type TeamDraftMultileaving struct{}
 
 var _ intergo.Interleaving = &TeamDraftMultileaving{}
 
-func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.Ranking) ([]intergo.Res, error) {
-	var numR = len(rks)
-	res := make([]intergo.Res, 0, num)
+func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rankings ...intergo.Ranking) ([]*intergo.Result, error) {
+	if num < 1 {
+		return nil, intergo.ErrNonPositiveSamplingNumParameters
+	} else if len(rankings) < 1 {
+		return nil, intergo.ErrInsufficientRankingsParameters
+	}
+
+	var numR = len(rankings)
+	res := make([]*intergo.Result, 0, num)
 
 	// sIDs stores item's ID in order to prevent duplication in the generated list.
-	sIDs := map[interface{}]interface{}{}
+	sIDs := make(map[intergo.ID]struct{}, num)
 
 	// minRks have rankings' index whose number of selected items is minimum
 	minRks := make([]int, 0, numR)
 
 	// lastIdx has a last index of the indexed ranking
-	lastIdx := map[int]int{}
+	lastIdx := make(map[int]int, numR)
 	for i := 0; i < numR; i++ {
 		minRks = append(minRks, i)
 		lastIdx[i] = 0
 	}
 
 	// The fact that the index stored in usedUpRks means it is already used up.
-	usedUpRks := map[int]bool{}
+	usedUpRks := make(map[int]struct{}, numR)
 
 	for len(res) < num && len(usedUpRks) != numR {
 
 		// chose one ranking from keys of minRks
 		var selected int
 		selected, minRks = popRandomIdx(minRks)
-		var rk = rks[selected]
+		var rk = rankings[selected]
 
 		var bef = len(res)
 
 		for j := lastIdx[selected]; j < rk.Len(); j++ {
 			if _, ok := sIDs[rk.GetIDByIndex(j)]; !ok {
-				res = append(res, intergo.Res{
-					RankingIDx: selected,
-					ItemIDx:    j,
+				res = append(res, &intergo.Result{
+					RankingIndex: selected,
+					ItemIndex:    j,
 				})
 
-				sIDs[rk.GetIDByIndex(j)] = true
+				sIDs[rk.GetIDByIndex(j)] = struct{}{}
 				lastIdx[selected] = j
 				break
 			}
 		}
 
 		if len(res) == bef {
-			usedUpRks[selected] = true
+			usedUpRks[selected] = struct{}{}
 		}
 
 		if len(minRks) == 0 {
 			// restore the targets
 			minRks = make([]int, 0, numR-len(usedUpRks))
 			for i := 0; i < numR; i++ {
-				if !usedUpRks[i] {
+				if _, ok := usedUpRks[i]; !ok {
 					minRks = append(minRks, i)
 				}
 			}
@@ -74,15 +80,15 @@ func popRandomIdx(target []int) (int, []int) {
 		return target[0], []int{}
 	}
 
-	selectedIDx := rand.Intn(len(target))
-	selected := target[selectedIDx]
+	selectedIdx := rand.Intn(len(target))
+	selected := target[selectedIdx]
 
 	popped := make([]int, 0, len(target)-1)
 
 	for i, idx := range target {
-		if i < selectedIDx {
+		if i < selectedIdx {
 			popped = append(popped, idx)
-		} else if i == selectedIDx {
+		} else if i == selectedIdx {
 			continue
 		} else {
 			popped = append(popped, idx)

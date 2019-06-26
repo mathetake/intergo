@@ -11,7 +11,7 @@ import (
 
 type tRanking []int
 
-func (rk tRanking) GetIDByIndex(i int) interface{} {
+func (rk tRanking) GetIDByIndex(i int) intergo.ID {
 	return rk[i]
 }
 
@@ -22,12 +22,12 @@ func (rk tRanking) Len() int {
 var _ intergo.Ranking = tRanking{}
 
 func TestBalancedMultileaving(t *testing.T) {
-	bMultileaving := &bm.BalancedMultileaving{}
+	b := &bm.BalancedMultileaving{}
 
 	cases := []struct {
 		inputRks         []intergo.Ranking
 		num              int
-		expectedPatterns [][]intergo.Res
+		expectedPatterns [][]intergo.Result
 	}{
 		{
 			inputRks: []intergo.Ranking{
@@ -35,22 +35,22 @@ func TestBalancedMultileaving(t *testing.T) {
 				tRanking{10, 20, 30, 40, 50},
 			},
 			num: 2,
-			expectedPatterns: [][]intergo.Res{
+			expectedPatterns: [][]intergo.Result{
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
 				},
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 1},
 				},
 			},
 		},
@@ -60,22 +60,22 @@ func TestBalancedMultileaving(t *testing.T) {
 				tRanking{1, 20, 30, 40, 50},
 			},
 			num: 2,
-			expectedPatterns: [][]intergo.Res{
+			expectedPatterns: [][]intergo.Result{
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 1},
 				},
 			},
 		},
@@ -85,22 +85,22 @@ func TestBalancedMultileaving(t *testing.T) {
 				tRanking{1, 1, 30, 40, 50},
 			},
 			num: 2,
-			expectedPatterns: [][]intergo.Res{
+			expectedPatterns: [][]intergo.Result{
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 2},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 2},
 				},
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 2},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 2},
 				},
 			},
 		},
@@ -109,16 +109,16 @@ func TestBalancedMultileaving(t *testing.T) {
 	for n, tc := range cases {
 		tcc := tc
 		t.Run(fmt.Sprintf("%d-th unit test", n), func(t *testing.T) {
-			actual, _ := bMultileaving.GetInterleavedRanking(tcc.num, tcc.inputRks...)
+			actual, _ := b.GetInterleavedRanking(tcc.num, tcc.inputRks...)
 			t.Log("actual: ", actual)
 			assert.Equal(t, true, len(actual) <= tcc.num)
 
-			var isExpected = false
+			var isExpected bool
 			for _, expected := range tcc.expectedPatterns {
 
 				var isExpectedPattern = true
 				for i := 0; i < tcc.num; i++ {
-					if actual[i] != expected[i] {
+					if *actual[i] != expected[i] {
 						isExpectedPattern = false
 					}
 				}

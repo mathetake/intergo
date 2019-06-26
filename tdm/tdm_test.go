@@ -11,7 +11,7 @@ import (
 
 type tRanking []int
 
-func (rk tRanking) GetIDByIndex(i int) interface{} {
+func (rk tRanking) GetIDByIndex(i int) intergo.ID {
 	return rk[i]
 }
 
@@ -22,27 +22,44 @@ func (rk tRanking) Len() int {
 var _ intergo.Ranking = tRanking{}
 
 func TestTeamDraftMultileaving(t *testing.T) {
-	tdMultileaving := &tdm.TeamDraftMultileaving{}
+	td := &tdm.TeamDraftMultileaving{}
 
 	cases := []struct {
 		inputRks         []intergo.Ranking
 		num              int
-		expectedPatterns [][]intergo.Res
+		expectedPatterns [][]intergo.Result
+		expErr           error
 	}{
+		{
+			inputRks: []intergo.Ranking{},
+			num:      10,
+			expErr:   intergo.ErrInsufficientRankingsParameters,
+		},
+		{
+			inputRks: []intergo.Ranking{
+				tRanking{1, 2, 3, 4, 5},
+				tRanking{10, 20, 30, 40, 50},
+			},
+			num:    0,
+			expErr: intergo.ErrNonPositiveSamplingNumParameters,
+		},
+		{
+			expErr: intergo.ErrNonPositiveSamplingNumParameters,
+		},
 		{
 			inputRks: []intergo.Ranking{
 				tRanking{1, 2, 3, 4, 5},
 				tRanking{10, 20, 30, 40, 50},
 			},
 			num: 2,
-			expectedPatterns: [][]intergo.Res{
+			expectedPatterns: [][]intergo.Result{
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
 				},
 			},
 		},
@@ -52,14 +69,14 @@ func TestTeamDraftMultileaving(t *testing.T) {
 				tRanking{1, 20, 30, 40, 50},
 			},
 			num: 2,
-			expectedPatterns: [][]intergo.Res{
+			expectedPatterns: [][]intergo.Result{
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
 				},
 			},
 		},
@@ -69,44 +86,50 @@ func TestTeamDraftMultileaving(t *testing.T) {
 				tRanking{1, 20, 30, 40, 50},
 			},
 			num: 3,
-			expectedPatterns: [][]intergo.Res{
+			expectedPatterns: [][]intergo.Result{
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 1},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
+					intergo.Result{RankingIndex: 1, ItemIndex: 1},
 				},
 				{
-					intergo.Res{RankingIDx: 1, ItemIDx: 0},
-					intergo.Res{RankingIDx: 0, ItemIDx: 1},
-					intergo.Res{RankingIDx: 0, ItemIDx: 2},
+					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					intergo.Result{RankingIndex: 0, ItemIndex: 1},
+					intergo.Result{RankingIndex: 0, ItemIndex: 2},
 				},
 				{
-					intergo.Res{RankingIDx: 0, ItemIDx: 0},
-					intergo.Res{RankingIDx: 1, ItemIDx: 1},
-					intergo.Res{RankingIDx: 1, ItemIDx: 2},
+					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					intergo.Result{RankingIndex: 1, ItemIndex: 1},
+					intergo.Result{RankingIndex: 1, ItemIndex: 2},
 				},
 			},
 		},
 	}
 
 	for n, tc := range cases {
-		tcc := tc
+		tc := tc
 		t.Run(fmt.Sprintf("%d-th unit test", n), func(t *testing.T) {
-			actual, _ := tdMultileaving.GetInterleavedRanking(tcc.num, tcc.inputRks...)
-			t.Log("actual: ", actual)
-			assert.Equal(t, true, len(actual) <= tcc.num)
+			actual, actualErr := td.GetInterleavedRanking(tc.num, tc.inputRks...)
+			if tc.expErr != nil {
+				assert.Equal(t, tc.expErr, actualErr)
+				return // exit
+			} else if actualErr != nil {
+				t.Fatal(actualErr)
+			}
 
-			var isExpected = false
-			for _, expected := range tcc.expectedPatterns {
+			assert.Equal(t, true, len(actual) <= tc.num)
+
+			var isExpected bool
+			for _, expected := range tc.expectedPatterns {
 
 				var isExpectedPattern = true
-				for i := 0; i < tcc.num; i++ {
-					if actual[i] != expected[i] {
+				for i := 0; i < tc.num; i++ {
+					if *actual[i] != expected[i] {
 						isExpectedPattern = false
 					}
 				}
@@ -179,7 +202,7 @@ func TestTeamDraftMultileaving_RankingRatio(t *testing.T) {
 
 			counts := map[int]int{}
 			for _, it := range res {
-				counts[it.RankingIDx]++
+				counts[it.RankingIndex]++
 			}
 			fmt.Println(counts)
 
