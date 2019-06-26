@@ -80,15 +80,15 @@ func popRandomIdx(target []int) (int, []int) {
 		return target[0], []int{}
 	}
 
-	selectedIDx := rand.Intn(len(target))
-	selected := target[selectedIDx]
+	selectedIdx := rand.Intn(len(target))
+	selected := target[selectedIdx]
 
 	popped := make([]int, 0, len(target)-1)
 
 	for i, idx := range target {
-		if i < selectedIDx {
+		if i < selectedIdx {
 			popped = append(popped, idx)
-		} else if i == selectedIDx {
+		} else if i == selectedIdx {
 			continue
 		} else {
 			popped = append(popped, idx)
