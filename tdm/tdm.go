@@ -21,7 +21,7 @@ func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.
 	minRks := make([]int, 0, numR)
 
 	// lastIdx has a last index of the indexed ranking
-	lastIdx := map[int]int{}
+	lastIdx := make(map[int]int, numR)
 	for i := 0; i < numR; i++ {
 		minRks = append(minRks, i)
 		lastIdx[i] = 0
