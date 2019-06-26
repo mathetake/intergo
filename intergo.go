@@ -1,14 +1,3 @@
-// In package intergo, some interfaces and types are defined for interleaving/multileaving algorithms implementation.
-//
-// Specific algorithms are implemented in its subpackages:
-//
-// http://godoc.org/github.com/mathetake/intergo/bm implements balanced multileaving algorithm.
-//
-// http://godoc.org/github.com/mathetake/intergo/om implements optimized multileaving algorithm.
-//
-// http://godoc.org/github.com/mathetake/intergo/tdm implements team draft multileaving algorithm.
-//
-// See README.md for more details.
 package intergo
 
 // type ID is used as identifier of items.

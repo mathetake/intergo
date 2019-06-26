@@ -28,7 +28,7 @@ type Ranking interface {
 }
 ```
 
-Then you choose one of `bm` or `om` or `tdm` package which corresponds to the algorithm you want to use.
+Then choose one of `bm` or `om` or `tdm` package which corresponds to the algorithm you want to use.
 
 In each of these packages, there is a type which implements `intergo.Interleaving` interface defined in `intergo.go`,
 
@@ -98,6 +98,12 @@ func main() {
 2. Schuth, Anne, et al. "Multileaved comparisons for fast online evaluation." Proceedings of the 23rd ACM International Conference on Conference on Information and Knowledge Management. ACM, 2014.
 
 3. Manabe, Tomohiro, et al. "A comparative live evaluation of multileaving methods on a commercial cqa search." Proceedings of the 40th International ACM SIGIR Conference on Research and Development in Information Retrieval. ACM, 2017.
+
+
+## Author
+
+- [@koiizukag](https://github.com/koiizukag)
+- [@mathetake](https://twitter.com/mathetake)
 
 
 ## license

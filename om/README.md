@@ -1,8 +1,12 @@
-# om ... Optimized Multileaving
+## om package
+
+`om` stands for `Optimized Multileaving` and in this package, its algorithm is implemented in this package.
+
+type `OptimizedMultiLeaving` satisfies `intergo.Inteleaving` interface and you can generate
+interleaved/multileaved rankings by calling `GetInterleavedRanking` method.
 
 
-
-# References
+### References
 
 1. Schuth, Anne, et al. "Multileaved comparisons for fast online evaluation." Proceedings of the 23rd ACM International Conference on Conference on Information and Knowledge Management. ACM, 2014.
 
