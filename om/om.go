@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/mathetake/intergo"
-	"github.com/pkg/errors"
 )
 
 type OptimizedMultiLeaving struct {
@@ -32,7 +31,9 @@ func init() {
 // according to calculated sensitivities defined by equation (1) in [Manabe, Tomohiro, et al., 2017]
 func (o *OptimizedMultiLeaving) GetInterleavedRanking(num int, rks ...intergo.Ranking) ([]*intergo.Result, error) {
 	if num < 1 {
-		return nil, errors.Errorf("invalid NumSampling: %d", o.NumSampling)
+		return nil, intergo.ErrNonPositiveSamplingNumParameters
+	} else if len(rks) < 1 {
+		return nil, intergo.ErrInsufficientRankingsParameters
 	}
 
 	var wg sync.WaitGroup
@@ -51,28 +52,28 @@ func (o *OptimizedMultiLeaving) GetInterleavedRanking(num int, rks ...intergo.Ra
 
 	// init +inf value
 	min := math.Inf(0)
-	var maxIDx int
+	var maxIdx int
 	for i, v := range ins {
 		if v < min {
-			maxIDx, min = i, v
+			maxIdx, min = i, v
 		}
 	}
-	return cRks[maxIDx], nil
+	return cRks[maxIdx], nil
 }
 
-func (o *OptimizedMultiLeaving) GetCredit(RankingIndex int, itemId intergo.ID, idToPlacements []map[intergo.ID]int, creditLabel int, isSameRankingIndex bool) float64 {
+func (o *OptimizedMultiLeaving) GetCredit(rankingIndex int, itemId intergo.ID, idToPlacements []map[intergo.ID]int, creditLabel int, isSameRankingIndex bool) float64 {
 	switch creditLabel {
 	case 0:
 		// credit = 1 / (original rank)
-		placement, ok := idToPlacements[RankingIndex][itemId]
+		placement, ok := idToPlacements[rankingIndex][itemId]
 		if ok {
 			return 1 / float64(placement)
 		} else {
-			return 1 / float64(len(idToPlacements[RankingIndex])+1)
+			return 1 / float64(len(idToPlacements[rankingIndex])+1)
 		}
 	case 1:
 		// credit = -(relative rank - 1)
-		if _, ok := idToPlacements[RankingIndex][itemId]; !ok {
+		if _, ok := idToPlacements[rankingIndex][itemId]; !ok {
 			return -float64(len(idToPlacements))
 		}
 		var numLess float64
@@ -80,7 +81,7 @@ func (o *OptimizedMultiLeaving) GetCredit(RankingIndex int, itemId intergo.ID, i
 			if _, ok := idToPlacements[i][itemId]; !ok {
 				continue
 			}
-			if idToPlacements[i][itemId] < idToPlacements[RankingIndex][itemId] {
+			if idToPlacements[i][itemId] < idToPlacements[rankingIndex][itemId] {
 				numLess += 1
 			}
 		}

@@ -11,6 +11,12 @@ type TeamDraftMultileaving struct{}
 var _ intergo.Interleaving = &TeamDraftMultileaving{}
 
 func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.Ranking) ([]*intergo.Result, error) {
+	if num < 1 {
+		return nil, intergo.ErrNonPositiveSamplingNumParameters
+	} else if len(rks) < 1 {
+		return nil, intergo.ErrInsufficientRankingsParameters
+	}
+
 	var numR = len(rks)
 	res := make([]*intergo.Result, 0, num)
 

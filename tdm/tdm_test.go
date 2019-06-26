@@ -28,7 +28,24 @@ func TestTeamDraftMultileaving(t *testing.T) {
 		inputRks         []intergo.Ranking
 		num              int
 		expectedPatterns [][]intergo.Result
+		expErr           error
 	}{
+		{
+			inputRks: []intergo.Ranking{},
+			num:      10,
+			expErr:   intergo.ErrInsufficientRankingsParameters,
+		},
+		{
+			inputRks: []intergo.Ranking{
+				tRanking{1, 2, 3, 4, 5},
+				tRanking{10, 20, 30, 40, 50},
+			},
+			num:    0,
+			expErr: intergo.ErrNonPositiveSamplingNumParameters,
+		},
+		{
+			expErr: intergo.ErrNonPositiveSamplingNumParameters,
+		},
 		{
 			inputRks: []intergo.Ranking{
 				tRanking{1, 2, 3, 4, 5},
@@ -95,16 +112,23 @@ func TestTeamDraftMultileaving(t *testing.T) {
 	}
 
 	for n, tc := range cases {
-		tcc := tc
+		tc := tc
 		t.Run(fmt.Sprintf("%d-th unit test", n), func(t *testing.T) {
-			actual, _ := td.GetInterleavedRanking(tcc.num, tcc.inputRks...)
-			assert.Equal(t, true, len(actual) <= tcc.num)
+			actual, actualErr := td.GetInterleavedRanking(tc.num, tc.inputRks...)
+			if tc.expErr != nil {
+				assert.Equal(t, tc.expErr, actualErr)
+				return // exit
+			} else if actualErr != nil {
+				t.Fatal(actualErr)
+			}
+
+			assert.Equal(t, true, len(actual) <= tc.num)
 
 			var isExpected bool
-			for _, expected := range tcc.expectedPatterns {
+			for _, expected := range tc.expectedPatterns {
 
 				var isExpectedPattern = true
-				for i := 0; i < tcc.num; i++ {
+				for i := 0; i < tc.num; i++ {
 					if *actual[i] != expected[i] {
 						isExpectedPattern = false
 					}
