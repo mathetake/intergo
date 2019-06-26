@@ -22,7 +22,7 @@ func (rk tRanking) Len() int {
 var _ intergo.Ranking = tRanking{}
 
 func TestTeamDraftMultileaving(t *testing.T) {
-	tdMultileaving := &tdm.TeamDraftMultileaving{}
+	td := &tdm.TeamDraftMultileaving{}
 
 	cases := []struct {
 		inputRks         []intergo.Ranking
@@ -97,7 +97,7 @@ func TestTeamDraftMultileaving(t *testing.T) {
 	for n, tc := range cases {
 		tcc := tc
 		t.Run(fmt.Sprintf("%d-th unit test", n), func(t *testing.T) {
-			actual, _ := tdMultileaving.GetInterleavedRanking(tcc.num, tcc.inputRks...)
+			actual, _ := td.GetInterleavedRanking(tcc.num, tcc.inputRks...)
 			t.Log("actual: ", actual)
 			assert.Equal(t, true, len(actual) <= tcc.num)
 
