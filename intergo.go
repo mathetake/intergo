@@ -20,5 +20,5 @@ type Result struct {
 }
 
 type Interleaving interface {
-	GetInterleavedRanking(int, ...Ranking) ([]Result, error)
+	GetInterleavedRanking(int, ...Ranking) ([]*Result, error)
 }

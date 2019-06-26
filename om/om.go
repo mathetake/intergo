@@ -28,13 +28,13 @@ func init() {
 // where they solved LP with the unbiased constraint.
 // We omit the unbiased constraint and only take `sensitivity` into account. Then we sample a ranking
 // according to calculated sensitivities defined by equation (1) in [Manabe, Tomohiro, et al., 2017]
-func (o *OptimizedMultiLeaving) GetInterleavedRanking(num int, rks ...intergo.Ranking) ([]intergo.Result, error) {
+func (o *OptimizedMultiLeaving) GetInterleavedRanking(num int, rks ...intergo.Ranking) ([]*intergo.Result, error) {
 	if num < 1 {
 		return nil, errors.Errorf("invalid NumSampling: %d", o.NumSampling)
 	}
 
 	var wg sync.WaitGroup
-	cRks := make([][]intergo.Result, o.NumSampling)
+	cRks := make([][]*intergo.Result, o.NumSampling)
 	wg.Add(o.NumSampling)
 	for i := 0; i < o.NumSampling; i++ {
 		go func(i int) {
@@ -110,7 +110,7 @@ func (o *OptimizedMultiLeaving) GetIdToPlacementMap(rks []intergo.Ranking) []map
 	return idToPlacements
 }
 
-func (o *OptimizedMultiLeaving) CalcInsensitivityAndBias(rks []intergo.Ranking, res []intergo.Result, creditLabel int, alpha float64) (float64, float64) {
+func (o *OptimizedMultiLeaving) CalcInsensitivityAndBias(rks []intergo.Ranking, res []*intergo.Result, creditLabel int, alpha float64) (float64, float64) {
 	var iRkNum = len(rks)
 	var insensitivityMean float64
 
@@ -169,7 +169,7 @@ func (o *OptimizedMultiLeaving) CalcInsensitivityAndBias(rks []intergo.Ranking, 
 	return (insensitivitySum + alpha*bias) / (insensitivityMean * insensitivityMean), biasSum / fResLen
 }
 
-func (o *OptimizedMultiLeaving) calcInsensitivities(rks []intergo.Ranking, cRks [][]intergo.Result) []float64 {
+func (o *OptimizedMultiLeaving) calcInsensitivities(rks []intergo.Ranking, cRks [][]*intergo.Result) []float64 {
 	res := make([]float64, len(cRks))
 
 	var wg sync.WaitGroup
@@ -184,9 +184,9 @@ func (o *OptimizedMultiLeaving) calcInsensitivities(rks []intergo.Ranking, cRks 
 	return res
 }
 
-func (*OptimizedMultiLeaving) prefixConstraintSampling(num int, rks ...intergo.Ranking) []intergo.Result {
+func (*OptimizedMultiLeaving) prefixConstraintSampling(num int, rks ...intergo.Ranking) []*intergo.Result {
 	var numR = len(rks)
-	res := make([]intergo.Result, 0, num)
+	res := make([]*intergo.Result, 0, num)
 
 	// sIDs stores item's ID in order to prevent duplication in the generated list.
 	sIDs := make(map[intergo.ID]struct{}, num)
@@ -206,7 +206,7 @@ func (*OptimizedMultiLeaving) prefixConstraintSampling(num int, rks ...intergo.R
 		var bef = len(res)
 		for j := 0; j < rk.Len(); j++ {
 			if _, ok := sIDs[rk.GetIDByIndex(j)]; !ok {
-				res = append(res, intergo.Result{
+				res = append(res, &intergo.Result{
 					RankingIndex: selectedRkIdx,
 					ItemIndex:    j,
 				})

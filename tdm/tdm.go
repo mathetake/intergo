@@ -10,9 +10,9 @@ type TeamDraftMultileaving struct{}
 
 var _ intergo.Interleaving = &TeamDraftMultileaving{}
 
-func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.Ranking) ([]intergo.Result, error) {
+func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.Ranking) ([]*intergo.Result, error) {
 	var numR = len(rks)
-	res := make([]intergo.Result, 0, num)
+	res := make([]*intergo.Result, 0, num)
 
 	// sIDs stores item's ID in order to prevent duplication in the generated list.
 	sIDs := make(map[intergo.ID]struct{}, num)
@@ -41,7 +41,7 @@ func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.
 
 		for j := lastIdx[selected]; j < rk.Len(); j++ {
 			if _, ok := sIDs[rk.GetIDByIndex(j)]; !ok {
-				res = append(res, intergo.Result{
+				res = append(res, &intergo.Result{
 					RankingIndex: selected,
 					ItemIndex:    j,
 				})

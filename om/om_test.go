@@ -31,14 +31,14 @@ func TestGetInterleavedRanking(t *testing.T) {
 	cases := []struct {
 		num           int
 		inputRankings []intergo.Ranking
-		expected      []intergo.Result
+		expected      []*intergo.Result
 	}{
 		{
 			inputRankings: []intergo.Ranking{
 				tRanking{1, 2, 3, 4, 5},
 				tRanking{10, 20, 30, 40, 50},
 			},
-			expected: []intergo.Result{
+			expected: []*intergo.Result{
 				{RankingIndex: 0, ItemIndex: 0},
 				{RankingIndex: 1, ItemIndex: 0},
 			},
@@ -49,7 +49,7 @@ func TestGetInterleavedRanking(t *testing.T) {
 				tRanking{1, 2, 3},
 				tRanking{10, 20, 30},
 			},
-			expected: []intergo.Result{
+			expected: []*intergo.Result{
 				{RankingIndex: 0, ItemIndex: 0},
 				{RankingIndex: 1, ItemIndex: 0},
 				{RankingIndex: 1, ItemIndex: 1},
@@ -62,7 +62,7 @@ func TestGetInterleavedRanking(t *testing.T) {
 				tRanking{10, 20, 30},
 				tRanking{100, 200, 300},
 			},
-			expected: []intergo.Result{
+			expected: []*intergo.Result{
 				{RankingIndex: 0, ItemIndex: 0},
 				{RankingIndex: 1, ItemIndex: 0},
 				{RankingIndex: 2, ItemIndex: 0},
@@ -88,7 +88,7 @@ func TestGetCredit(t *testing.T) {
 	cases := []struct {
 		RankingIndex       int
 		itemId             interface{}
-		idToPlacements     []map[interface{}]int
+		idToPlacements     []map[intergo.ID]int
 		creditLabel        int
 		isSameRankingIndex bool
 		expected           float64
@@ -96,7 +96,7 @@ func TestGetCredit(t *testing.T) {
 		{
 			RankingIndex: 1,
 			itemId:       "item1",
-			idToPlacements: []map[interface{}]int{
+			idToPlacements: []map[intergo.ID]int{
 				{"item1": 1, "item2": 2, "item3": 3},
 				{"item1": 3, "item2": 1, "item3": 2},
 				{"item1": 2, "item2": 1, "item3": 3},
@@ -108,7 +108,7 @@ func TestGetCredit(t *testing.T) {
 		{
 			RankingIndex: 1,
 			itemId:       "item1",
-			idToPlacements: []map[interface{}]int{
+			idToPlacements: []map[intergo.ID]int{
 				{"item1": 1, "item2": 2, "item3": 3},
 				{"item1": 3, "item2": 1, "item3": 2},
 				{"item1": 2, "item2": 1, "item3": 3},
@@ -120,7 +120,7 @@ func TestGetCredit(t *testing.T) {
 		{
 			RankingIndex: 0,
 			itemId:       "item2",
-			idToPlacements: []map[interface{}]int{
+			idToPlacements: []map[intergo.ID]int{
 				{"item1": 1, "item3": 3},
 				{"item1": 3, "item2": 1, "item3": 2},
 				{"item1": 2, "item2": 1, "item3": 3},
@@ -132,7 +132,7 @@ func TestGetCredit(t *testing.T) {
 		{
 			RankingIndex: 1,
 			itemId:       "item2",
-			idToPlacements: []map[interface{}]int{
+			idToPlacements: []map[intergo.ID]int{
 				{"item1": 1, "item3": 3},
 				{"item1": 3, "item2": 1, "item3": 2},
 				{"item1": 2, "item2": 1, "item3": 3},
@@ -144,7 +144,7 @@ func TestGetCredit(t *testing.T) {
 		{
 			RankingIndex: 0,
 			itemId:       "item2",
-			idToPlacements: []map[interface{}]int{
+			idToPlacements: []map[intergo.ID]int{
 				{"item1": 1, "item2": 2, "item3": 3},
 				{"item1": 3, "item2": 1, "item3": 2},
 				{"item1": 2, "item2": 1, "item3": 3},
@@ -156,7 +156,7 @@ func TestGetCredit(t *testing.T) {
 		{
 			RankingIndex: 0,
 			itemId:       "item2",
-			idToPlacements: []map[interface{}]int{
+			idToPlacements: []map[intergo.ID]int{
 				{"item1": 1, "item2": 2, "item3": 3},
 				{"item1": 3, "item2": 1, "item3": 2},
 				{"item1": 2, "item2": 1, "item3": 3},
@@ -294,12 +294,12 @@ func TestPrefixConstraintSampling(t *testing.T) {
 			actual := o.ExportedPrefixConstraintSampling(tcc.num, tcc.inputRks...)
 			assert.Equal(t, true, len(actual) <= tcc.num)
 
-			var isExpected = false
+			var isExpected bool
 			for _, expected := range tcc.expectedPatterns {
 
 				var isExpectedPattern = true
 				for i := 0; i < tcc.num; i++ {
-					if actual[i] != expected[i] {
+					if *actual[i] != expected[i] {
 						isExpectedPattern = false
 					}
 				}
@@ -319,7 +319,7 @@ func TestCalcInsensitivity(t *testing.T) {
 
 	cases := []struct {
 		inputRankings    []intergo.Ranking
-		combinedRankings [][]intergo.Result
+		combinedRankings [][]*intergo.Result
 		expected         []float64
 		threshold        float64
 	}{
@@ -328,14 +328,14 @@ func TestCalcInsensitivity(t *testing.T) {
 				tRanking{1, 2, 3, 4, 5},
 				tRanking{10, 20, 30, 40, 50},
 			},
-			combinedRankings: [][]intergo.Result{
+			combinedRankings: [][]*intergo.Result{
 				{
-					intergo.Result{RankingIndex: 0, ItemIndex: 0},
-					intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					&intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					&intergo.Result{RankingIndex: 1, ItemIndex: 0},
 				},
 				{
-					intergo.Result{RankingIndex: 0, ItemIndex: 0},
-					intergo.Result{RankingIndex: 0, ItemIndex: 1},
+					&intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					&intergo.Result{RankingIndex: 0, ItemIndex: 1},
 				},
 			},
 			expected:  []float64{0.1133786848, 0.8888888889},
@@ -346,16 +346,16 @@ func TestCalcInsensitivity(t *testing.T) {
 				tRanking{1, 2, 3},
 				tRanking{10, 20, 30},
 			},
-			combinedRankings: [][]intergo.Result{
+			combinedRankings: [][]*intergo.Result{
 				{
-					intergo.Result{RankingIndex: 0, ItemIndex: 0},
-					intergo.Result{RankingIndex: 1, ItemIndex: 0},
-					intergo.Result{RankingIndex: 1, ItemIndex: 1},
+					&intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					&intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					&intergo.Result{RankingIndex: 1, ItemIndex: 1},
 				},
 				{
-					intergo.Result{RankingIndex: 0, ItemIndex: 0},
-					intergo.Result{RankingIndex: 0, ItemIndex: 1},
-					intergo.Result{RankingIndex: 0, ItemIndex: 2},
+					&intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					&intergo.Result{RankingIndex: 0, ItemIndex: 1},
+					&intergo.Result{RankingIndex: 0, ItemIndex: 2},
 				},
 			},
 			expected:  []float64{0.0376778162, 0.4923955480},
@@ -367,21 +367,21 @@ func TestCalcInsensitivity(t *testing.T) {
 				tRanking{10, 20, 30},
 				tRanking{100, 200, 300},
 			},
-			combinedRankings: [][]intergo.Result{
+			combinedRankings: [][]*intergo.Result{
 				{
-					intergo.Result{RankingIndex: 0, ItemIndex: 0},
-					intergo.Result{RankingIndex: 1, ItemIndex: 0},
-					intergo.Result{RankingIndex: 2, ItemIndex: 0},
+					&intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					&intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					&intergo.Result{RankingIndex: 2, ItemIndex: 0},
 				},
 				{
-					intergo.Result{RankingIndex: 0, ItemIndex: 0},
-					intergo.Result{RankingIndex: 0, ItemIndex: 1},
-					intergo.Result{RankingIndex: 2, ItemIndex: 0},
+					&intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					&intergo.Result{RankingIndex: 0, ItemIndex: 1},
+					&intergo.Result{RankingIndex: 2, ItemIndex: 0},
 				},
 				{
-					intergo.Result{RankingIndex: 1, ItemIndex: 0},
-					intergo.Result{RankingIndex: 1, ItemIndex: 1},
-					intergo.Result{RankingIndex: 0, ItemIndex: 0},
+					&intergo.Result{RankingIndex: 1, ItemIndex: 0},
+					&intergo.Result{RankingIndex: 1, ItemIndex: 1},
+					&intergo.Result{RankingIndex: 0, ItemIndex: 0},
 				},
 			},
 			expected:  []float64{0.1611570248, 0.5850000000, 0.5850000000},

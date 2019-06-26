@@ -113,12 +113,12 @@ func TestBalancedMultileaving(t *testing.T) {
 			t.Log("actual: ", actual)
 			assert.Equal(t, true, len(actual) <= tcc.num)
 
-			var isExpected = false
+			var isExpected bool
 			for _, expected := range tcc.expectedPatterns {
 
 				var isExpectedPattern = true
 				for i := 0; i < tcc.num; i++ {
-					if actual[i] != expected[i] {
+					if *actual[i] != expected[i] {
 						isExpectedPattern = false
 					}
 				}
