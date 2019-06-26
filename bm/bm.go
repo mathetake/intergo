@@ -39,7 +39,7 @@ func (*BalancedMultileaving) GetInterleavedRanking(num int, rks ...intergo.Ranki
 		if _, ok := sIDs[itemID]; !ok {
 			res = append(res, intergo.Result{
 				RankingIndex: selectedRkIdx,
-				ItemIDx:    c,
+				ItemIndex:    c,
 			})
 			sIDs[itemID] = true
 		}
