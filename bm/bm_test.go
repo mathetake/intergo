@@ -22,7 +22,7 @@ func (rk tRanking) Len() int {
 var _ intergo.Ranking = tRanking{}
 
 func TestBalancedMultileaving(t *testing.T) {
-	bMultileaving := &bm.BalancedMultileaving{}
+	b := &bm.BalancedMultileaving{}
 
 	cases := []struct {
 		inputRks         []intergo.Ranking
@@ -109,7 +109,7 @@ func TestBalancedMultileaving(t *testing.T) {
 	for n, tc := range cases {
 		tcc := tc
 		t.Run(fmt.Sprintf("%d-th unit test", n), func(t *testing.T) {
-			actual, _ := bMultileaving.GetInterleavedRanking(tcc.num, tcc.inputRks...)
+			actual, _ := b.GetInterleavedRanking(tcc.num, tcc.inputRks...)
 			t.Log("actual: ", actual)
 			assert.Equal(t, true, len(actual) <= tcc.num)
 

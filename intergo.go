@@ -9,10 +9,10 @@ type Ranking interface {
 }
 
 type Result struct {
-	// Ranking ... represents to which ranking the item belongs
+	// RankingIndex ... represents to which ranking the item belongs
 	RankingIndex int
 
-	// ItemIndex ... represents the item's index in the ranking declared by RankingIndex
+	// ItemIndex ... represents the item's index in the ranking declared by RankingIDx
 	ItemIndex int
 }
 
