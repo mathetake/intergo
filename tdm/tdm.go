@@ -10,14 +10,14 @@ type TeamDraftMultileaving struct{}
 
 var _ intergo.Interleaving = &TeamDraftMultileaving{}
 
-func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.Ranking) ([]*intergo.Result, error) {
+func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rankings ...intergo.Ranking) ([]*intergo.Result, error) {
 	if num < 1 {
 		return nil, intergo.ErrNonPositiveSamplingNumParameters
-	} else if len(rks) < 1 {
+	} else if len(rankings) < 1 {
 		return nil, intergo.ErrInsufficientRankingsParameters
 	}
 
-	var numR = len(rks)
+	var numR = len(rankings)
 	res := make([]*intergo.Result, 0, num)
 
 	// sIDs stores item's ID in order to prevent duplication in the generated list.
@@ -41,7 +41,7 @@ func (tdm *TeamDraftMultileaving) GetInterleavedRanking(num int, rks ...intergo.
 		// chose one ranking from keys of minRks
 		var selected int
 		selected, minRks = popRandomIdx(minRks)
-		var rk = rks[selected]
+		var rk = rankings[selected]
 
 		var bef = len(res)
 

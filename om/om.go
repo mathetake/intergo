@@ -29,10 +29,10 @@ func init() {
 // where they solved LP with the unbiased constraint.
 // We omit the unbiased constraint and only take `sensitivity` into account. Then we sample a ranking
 // according to calculated sensitivities defined by equation (1) in [Manabe, Tomohiro, et al., 2017]
-func (o *OptimizedMultiLeaving) GetInterleavedRanking(num int, rks ...intergo.Ranking) ([]*intergo.Result, error) {
+func (o *OptimizedMultiLeaving) GetInterleavedRanking(num int, rankings ...intergo.Ranking) ([]*intergo.Result, error) {
 	if num < 1 {
 		return nil, intergo.ErrNonPositiveSamplingNumParameters
-	} else if len(rks) < 1 {
+	} else if len(rankings) < 1 {
 		return nil, intergo.ErrInsufficientRankingsParameters
 	}
 
@@ -42,13 +42,13 @@ func (o *OptimizedMultiLeaving) GetInterleavedRanking(num int, rks ...intergo.Ra
 	for i := 0; i < o.NumSampling; i++ {
 		go func(i int) {
 			defer wg.Done()
-			cRks[i] = o.prefixConstraintSampling(num, rks...)
+			cRks[i] = o.prefixConstraintSampling(num, rankings...)
 		}(i)
 	}
 	wg.Wait()
 
 	// calc Insensitivity of sampled rankings
-	ins := o.calcInsensitivities(rks, cRks)
+	ins := o.calcInsensitivities(rankings, cRks)
 
 	// init +inf value
 	min := math.Inf(0)

@@ -10,14 +10,14 @@ type BalancedMultileaving struct{}
 
 var _ intergo.Interleaving = &BalancedMultileaving{}
 
-func (*BalancedMultileaving) GetInterleavedRanking(num int, rks ...intergo.Ranking) ([]*intergo.Result, error) {
+func (*BalancedMultileaving) GetInterleavedRanking(num int, rankings ...intergo.Ranking) ([]*intergo.Result, error) {
 	if num < 1 {
 		return nil, intergo.ErrNonPositiveSamplingNumParameters
-	} else if len(rks) < 1 {
+	} else if len(rankings) < 1 {
 		return nil, intergo.ErrInsufficientRankingsParameters
 	}
 
-	var numR = len(rks)
+	var numR = len(rankings)
 	res := make([]*intergo.Result, 0, num)
 
 	// sIDs stores item's ID in order to prevent duplication in the generated list.
@@ -26,7 +26,7 @@ func (*BalancedMultileaving) GetInterleavedRanking(num int, rks ...intergo.Ranki
 	// The fact that the index stored in usedUpRks means it is already used up.
 	usedUpRks := make(map[int]struct{}, numR)
 
-	counter := make(map[int]int, len(rks))
+	counter := make(map[int]int, numR)
 
 	for len(res) < num && len(usedUpRks) != numR {
 
@@ -40,7 +40,7 @@ func (*BalancedMultileaving) GetInterleavedRanking(num int, rks ...intergo.Ranki
 		c, _ := counter[selectedRkIdx]
 
 		// get ID of the pointed item
-		itemID := rks[selectedRkIdx].GetIDByIndex(c)
+		itemID := rankings[selectedRkIdx].GetIDByIndex(c)
 
 		if _, ok := sIDs[itemID]; !ok {
 			res = append(res, &intergo.Result{
@@ -53,7 +53,7 @@ func (*BalancedMultileaving) GetInterleavedRanking(num int, rks ...intergo.Ranki
 		// increment pointer on the selected ranking
 		counter[selectedRkIdx]++
 
-		if c, _ := counter[selectedRkIdx]; c >= rks[selectedRkIdx].Len() {
+		if c, _ := counter[selectedRkIdx]; c >= rankings[selectedRkIdx].Len() {
 			usedUpRks[selectedRkIdx] = struct{}{}
 		}
 	}
