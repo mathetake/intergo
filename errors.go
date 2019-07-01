@@ -2,7 +2,7 @@ package intergo
 
 import "github.com/pkg/errors"
 
-// both of the following errors is intended to be returned by Interleaving.GetInterleavedRanking function.
+// these errors are intended to be returned by Interleaving.GetInterleavedRanking function.
 var (
 	// ErrNonPositiveSamplingNumParameters should be returned when given "num" is non-positive integer
 	ErrNonPositiveSamplingNumParameters = errors.New("`num` parameter should be positive")
