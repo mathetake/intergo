@@ -2,7 +2,7 @@ package intergo
 
 // type ID is used as identifier of items.
 // The purpose is to remove item duplication in generated rankings.
-type ID interface{}
+type ID string
 
 // Ranking is the interface which all of target ranking should implement.
 type Ranking interface {

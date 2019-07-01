@@ -2,6 +2,7 @@ package bm_test
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/mathetake/intergo"
@@ -12,7 +13,7 @@ import (
 type tRanking []int
 
 func (rk tRanking) GetIDByIndex(i int) intergo.ID {
-	return rk[i]
+	return intergo.ID(strconv.Itoa(rk[i]))
 }
 
 func (rk tRanking) Len() int {

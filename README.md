@@ -20,7 +20,7 @@ Make sure that all of your rankings implement `intergo.Ranking` interface define
 ```go
 package intergo
 
-type ID interface{}
+type ID string
 
 type Ranking interface {
 	GetIDByIndex(int) ID
@@ -53,6 +53,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/mathetake/intergo"
 	"github.com/mathetake/intergo/tdm"
@@ -61,7 +62,7 @@ import (
 type tRanking []int
 
 func (rk tRanking) GetIDByIndex(i int) intergo.ID {
-	return rk[i]
+	return intergo.ID(strconv.Itoa(rk[i]))
 }
 
 func (rk tRanking) Len() int {
