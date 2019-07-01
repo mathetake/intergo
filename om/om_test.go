@@ -88,7 +88,7 @@ func TestGetCredit(t *testing.T) {
 
 	cases := []struct {
 		RankingIndex       int
-		itemId             interface{}
+		itemId             intergo.ID
 		idToPlacements     []map[intergo.ID]int
 		creditLabel        int
 		isSameRankingIndex bool
