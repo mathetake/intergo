@@ -1,11 +1,9 @@
-## om package
+## gom package
 
-`om` stands for `Greedy Optimized Multileaving` and its algorithm is implemented in this package.
+`gom` stands for `Greedy Optimized Multileaving` and its algorithm is implemented in this package.
 
-type `OptimizedMultiLeaving` satisfies `intergo.Inteleaving` interface and you can generate
+type `GreedyOptimizedMultiLeaving` satisfies `intergo.Inteleaving` interface and you can generate
 interleaved/multileaved rankings by calling `GetInterleavedRanking` method.
-
-__NOTE:__ om package generates a single combined ranking by solving optimized multileaving problem via greedy strategy.
 
 ### References
 
