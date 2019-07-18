@@ -100,10 +100,7 @@ func main() {
 
 3. Manabe, Tomohiro, et al. "A comparative live evaluation of multileaving methods on a commercial cqa search." Proceedings of the 40th International ACM SIGIR Conference on Research and Development in Information Retrieval. ACM, 2017.
 
-3. Kojiro Iizuka, Takeshi Yoneda, Yoshifumi Seki. "Greedy Optimized Multileaving for Personalization." Proceedings of the 13th International ACM Conference on Recommender Systems. ACM, 2019.
-
-
-
+4. Kojiro Iizuka, Takeshi Yoneda, Yoshifumi Seki. "Greedy Optimized Multileaving for Personalization." Proceedings of the 13th International ACM Conference on Recommender Systems. ACM, 2019.
 
 ## Author
 
