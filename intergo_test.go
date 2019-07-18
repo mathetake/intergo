@@ -54,7 +54,7 @@ func BenchmarkMultileaving(b *testing.B) {
 			})
 
 			for _, samplingSize := range []int{2, 10, 50, 100} {
-				b.Run(fmt.Sprintf("[[%d-th bench on Optimized Multileaving with sampling size: %d]]", n, samplingSize), func(b *testing.B) {
+				b.Run(fmt.Sprintf("[[%d-th bench on Greedy Optimized Multileaving with sampling size: %d]]", n, samplingSize), func(b *testing.B) {
 					benchmarkInputNum(fxx, inputRankingNum, &gom.GreedyOptimizedMultiLeaving{
 						NumSampling: samplingSize, CreditLabel: 0, Alpha: 0,
 					}, b)
