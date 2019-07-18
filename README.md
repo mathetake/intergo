@@ -8,7 +8,7 @@ A package for interleaving / multileaving ranking generation in go
 It is mainly tailored to be used for generating interleaved or multileaved ranking based on the following algorithm
 
 - Balanced Interleaving/Multileaving (in `github.com/mathetake/itergo/bm` package)
-- Optimized Multileaving (in `github.com/mathetake/intergo/om` package)
+- Greedy Optimized Multileaving (in `github.com/mathetake/intergo/gom` package)
 - Team Draft Interleaving/Multileaving (in `github.com/mathetake/itergo/tdm` package)
 
 __NOTE:__ this package aims only at generating a single combined ranking and does not implement the evaluation functions of the given rankings.
@@ -28,7 +28,7 @@ type Ranking interface {
 }
 ```
 
-Then choose one of `bm` or `om` or `tdm` package which corresponds to the algorithm you want to use.
+Then choose one of `bm` or `gom` or `tdm` package which corresponds to the algorithm you want to use.
 
 In each of these packages, there is a type which implements `intergo.Interleaving` interface defined in `intergo.go`,
 
@@ -95,11 +95,9 @@ func main() {
 ## References
 
 1. Radlinski, Filip, Madhu Kurup, and Thorsten Joachims. "How does clickthrough data reflect retrieval quality?." Proceedings of the 17th ACM conference on Information and knowledge management. ACM, 2008.
-
 2. Schuth, Anne, et al. "Multileaved comparisons for fast online evaluation." Proceedings of the 23rd ACM International Conference on Conference on Information and Knowledge Management. ACM, 2014.
-
 3. Manabe, Tomohiro, et al. "A comparative live evaluation of multileaving methods on a commercial cqa search." Proceedings of the 40th International ACM SIGIR Conference on Research and Development in Information Retrieval. ACM, 2017.
-
+4. Kojiro Iizuka, Takeshi Yoneda, Yoshifumi Seki. "Greedy Optimized Multileaving for Personalization." Proceedings of the 13th International ACM Conference on Recommender Systems. ACM, 2019.
 
 ## Author
 

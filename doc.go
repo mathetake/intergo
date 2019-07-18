@@ -3,7 +3,7 @@
 //
 // https://github.com/mathetake/intergo/blob/master/bm implements balanced multileaving algorithm.
 //
-// https://github.com/mathetake/intergo/blob/master/om implements optimized multileaving algorithm.
+// https://github.com/mathetake/intergo/blob/master/gom implements greedy optimized multileaving algorithm.
 //
 // https://github.com/mathetake/intergo/blob/master/tdm implements team draft multileaving algorithm.
 //

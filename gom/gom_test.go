@@ -1,4 +1,4 @@
-package om_test
+package gom_test
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/mathetake/intergo"
-	"github.com/mathetake/intergo/om"
+	"github.com/mathetake/intergo/gom"
 	"gotest.tools/assert"
 )
 
@@ -23,7 +23,7 @@ func (rk tRanking) Len() int {
 var _ intergo.Ranking = tRanking{}
 
 func TestGetInterleavedRanking(t *testing.T) {
-	o := &om.OptimizedMultiLeaving{
+	o := &gom.GreedyOptimizedMultiLeaving{
 		NumSampling: 100,
 		CreditLabel: 0,
 		Alpha:       0,
@@ -170,7 +170,7 @@ func TestGetCredit(t *testing.T) {
 
 	for n, tc := range cases {
 		tcc := tc
-		o := &om.OptimizedMultiLeaving{
+		o := &gom.GreedyOptimizedMultiLeaving{
 			CreditLabel: tc.creditLabel,
 		}
 		t.Run(fmt.Sprintf("%d-th unit test", n), func(t *testing.T) {
@@ -181,7 +181,7 @@ func TestGetCredit(t *testing.T) {
 }
 
 func TestPrefixConstraintSampling(t *testing.T) {
-	o := &om.OptimizedMultiLeaving{}
+	o := &gom.GreedyOptimizedMultiLeaving{}
 
 	cases := []struct {
 		inputRks         []intergo.Ranking
@@ -316,7 +316,7 @@ func TestPrefixConstraintSampling(t *testing.T) {
 }
 
 func TestCalcInsensitivity(t *testing.T) {
-	o := &om.OptimizedMultiLeaving{Alpha: 0, CreditLabel: 0}
+	o := &gom.GreedyOptimizedMultiLeaving{Alpha: 0, CreditLabel: 0}
 
 	cases := []struct {
 		inputRankings    []intergo.Ranking
